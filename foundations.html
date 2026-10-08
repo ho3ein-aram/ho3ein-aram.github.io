@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="fa" dir="rtl" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#08090b">
+<title id="pageTitle">مبانی</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script>
+try{const s=JSON.parse(localStorage.getItem('hossein_site_settings')||'null');document.documentElement.dataset.theme=(s&&s.theme)||'dark'}catch(e){document.documentElement.dataset.theme='dark'}
+</script>
+<style>
+.foundations-page{width:min(760px,100%);margin:auto;min-height:100vh;padding:34px 18px 140px;position:relative}
+.foundations-head{text-align:center;padding:30px 0 42px}
+.foundations-title{margin:0;font-size:clamp(42px,11vw,68px);font-weight:800;letter-spacing:-1.5px}
+.foundations-sub{margin-top:10px;color:var(--muted);font-size:13px}
+.foundation-card{width:min(620px,100%);margin:0 auto;display:flex;align-items:center;gap:18px;padding:22px;border:1px solid var(--line);border-radius:24px;background:linear-gradient(145deg,#ffffff08,#ffffff02);box-shadow:var(--shadow);transition:.2s;text-decoration:none;color:var(--text)}
+.foundation-card:hover{transform:translateY(-2px);border-color:#ffffff2b}
+.foundation-icon{width:58px;height:58px;flex:0 0 58px;border-radius:17px;display:grid;place-items:center;border:1px solid #ffffff18;background:#ffffff08;color:#aeb7c5}
+.foundation-icon svg{width:30px;height:30px}
+.foundation-card b{font-size:17px;display:block}.foundation-card small{display:block;margin-top:6px;color:var(--muted);font-size:12px}
+@media(max-width:480px){.foundations-page{padding-top:25px}.foundations-head{padding-top:28px;padding-bottom:34px}.foundation-card{padding:18px}.foundation-icon{width:52px;height:52px;flex-basis:52px}}
+</style>
+</head>
+<body>
+<div class="ambient a1"></div><div class="ambient a2"></div>
+<main class="foundations-page">
+  <header class="foundations-head">
+    <h1 class="foundations-title" id="foundationsTitle">مبانی</h1>
+  </header>
+
+  <a class="foundation-card" href="cyberpath.html">
+    <span class="foundation-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 3.2 19 6v5.2c0 4.5-2.9 7.9-7 9.6-4.1-1.7-7-5.1-7-9.6V6l7-2.8Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="m9.1 12 1.8 1.8 4.2-4.3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </span>
+    <span><b id="foundationCardTitle">مبانی هک اخلاقی</b><small id="foundationCardSub">CyberPath — نقشه راه امنیت سایبری</small></span>
+  </a>
+</main>
+
+<nav class="bottom-nav" aria-label="Navigation">
+  <button class="nav-item" type="button" onclick="location.href='index.html#profile'">
+    <span class="nav-icon">♙</span><span class="nav-label" id="navProfile">پروفایل</span>
+  </button>
+  <button class="nav-item" type="button" onclick="location.href='index.html#posts'">
+    <span class="nav-icon">▤</span><span class="nav-label" id="navPosts">پست‌ها</span>
+  </button>
+  <button class="nav-item active" type="button" aria-current="page">
+    <span class="nav-icon nav-icon-svg" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.2 19 6v5.2c0 4.5-2.9 7.9-7 9.6-4.1-1.7-7-5.1-7-9.6V6l7-2.8Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="m9.1 12 1.8 1.8 4.2-4.3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    <span class="nav-label" id="navFoundations">مبانی</span>
+  </button>
+  <button class="nav-item" type="button" onclick="location.href='index.html#ai'">
+    <span class="nav-icon">✦</span><span class="nav-label" id="navAI">هوش مصنوعی</span>
+  </button>
+</nav>
+
+<script>
+try{const s=JSON.parse(localStorage.getItem('hossein_site_settings')||'null');if(s&&s.theme==='light')document.documentElement.dataset.theme='light'}catch(e){}
+</script>
+
+<script>
+(function(){
+  let lang='fa';
+  try {
+    const s=JSON.parse(localStorage.getItem('hossein_site_settings')||'null');
+    if(s && s.language==='en') lang='en';
+  } catch(e) {}
+  const en=lang==='en';
+  document.documentElement.lang=en?'en':'fa';
+  document.documentElement.dir=en?'ltr':'rtl';
+  document.title=en?'Foundations':'مبانی';
+  const set=(id,fa,enText)=>{const el=document.getElementById(id);if(el)el.textContent=en?enText:fa};
+  set('foundationsTitle','مبانی','Foundations');
+  set('foundationCardTitle','مبانی هک اخلاقی','Ethical Hacking Foundations');
+  set('foundationCardSub','CyberPath — نقشه راه امنیت سایبری','CyberPath — Cybersecurity Roadmap');
+  set('navProfile','پروفایل','Profile');
+  set('navPosts','پست‌ها','Posts');
+  set('navFoundations','مبانی','Foundations');
+  set('navAI','هوش مصنوعی','AI');
+  const card=document.querySelector('.foundation-card');
+  if(card){card.setAttribute('aria-label',en?'Ethical Hacking Foundations':'مبانی هک اخلاقی');}
+})();
+</script>
+</body>
+</html>

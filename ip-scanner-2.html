@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wendigos Cyber | IP Intelligence</title>
+    <style>
+        :root {
+            --bg: #050706;
+            --panel: rgba(8, 12, 10, 0.92);
+            --panel-2: rgba(10, 15, 12, 0.97);
+            --text: #f3f7f4;
+            --muted: #aab7ae;
+            --line: rgba(0, 255, 102, 0.16);
+            --line-2: rgba(0, 255, 102, 0.28);
+            --accent: #00ff66;
+            --accent-2: #00c853;
+            --danger: #ff4d5a;
+            --shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+            --radius: 18px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+        }
+
+        body {
+            min-height: 100vh;
+            color: var(--text);
+            background:
+                radial-gradient(circle at top, rgba(0, 255, 102, 0.08), transparent 42%),
+                linear-gradient(180deg, #030504 0%, #070a08 50%, #020302 100%);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        #matrix {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -4;
+            pointer-events: none;
+            opacity: 0.9;
+        }
+
+        .grid {
+            position: fixed;
+            inset: 0;
+            z-index: -3;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(0, 255, 102, 0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 102, 0.08) 1px, transparent 1px);
+            background-size: 40px 40px;
+            animation: gridMove 8s linear infinite;
+        }
+
+        @keyframes gridMove {
+            from {
+                transform: translateY(0)
+            }
+            to {
+                transform: translateY(40px)
+            }
+        }
+
+        .bg {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            pointer-events: none;
+            overflow: hidden;
+            opacity: 0.2;
+        }
+
+        .bg svg {
+            width: 120%;
+            height: 120%;
+            animation: move 22s infinite linear;
+            transform-origin: center center;
+        }
+
+        @keyframes move {
+            0% {
+                transform: translate(0, 0) scale(1)
+            }
+            50% {
+                transform: translate(-48px, 30px) scale(1.1)
+            }
+            100% {
+                transform: translate(0, 0) scale(1)
+            }
+        }
+
+        .wrap {
+            width: min(1180px, calc(100% - 28px));
+            margin: 0 auto;
+            padding: 28px 0 34px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero {
+            padding: 26px 20px 18px;
+            border: 1px solid var(--line);
+            border-radius: 24px;
+            background: linear-gradient(180deg, rgba(10, 18, 13, 0.86), rgba(3, 7, 5, 0.82));
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(3px);
+        }
+
+        .toprow {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .brand h1 {
+            font-size: clamp(2rem, 5vw, 3.4rem);
+            color: var(--accent);
+            text-shadow: 0 0 12px rgba(212, 175, 55, 0.3), 0 0 28px rgba(212, 175, 55, 0.1);
+            letter-spacing: .5px;
+            line-height: 1.05;
+            margin-bottom: 8px;
+        }
+
+        .brand .sub {
+            color: var(--muted);
+            line-height: 1.9;
+            max-width: 820px;
+            font-size: .98rem;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border: 1px solid var(--line-2);
+            border-radius: 999px;
+            background: rgba(212, 175, 55, 0.08);
+            color: var(--accent-2);
+            box-shadow: 0 0 18px rgba(212, 175, 55, 0.06) inset;
+            white-space: nowrap;
+            height: fit-content;
+        }
+
+        .controls {
+            margin-top: 18px;
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .input {
+            width: 100%;
+            min-height: 54px;
+            border-radius: 14px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            background: rgba(8, 12, 10, 0.88);
+            color: var(--text);
+            padding: 14px 16px;
+            outline: none;
+            box-shadow: 0 0 16px rgba(212, 175, 55, 0.04) inset;
+            font-size: 1rem;
+        }
+
+        .input::placeholder {
+            color: rgba(44, 44, 44, 0.6);
+        }
+
+        .btn {
+            min-height: 54px;
+            border: 0;
+            border-radius: 14px;
+            padding: 0 18px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: transform .15s ease, opacity .15s ease, box-shadow .15s ease;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            opacity: .95;
+        }
+        .btn:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #0a0a0a;
+            box-shadow: 0 10px 24px rgba(212, 175, 55, 0.25);
+        }
+
+        .btn-ghost {
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--text);
+            border: 1px solid rgba(212, 175, 55, 0.28);
+        }
+
+        .status {
+            margin-top: 14px;
+            color: var(--muted);
+            line-height: 1.7;
+            min-height: 1.5em;
+            font-size: .95rem;
+        }
+
+        .panel {
+            margin-top: 18px;
+            border: 1px solid var(--line);
+            border-radius: 24px;
+            background: var(--panel);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(12px);
+            overflow: hidden;
+        }
+
+        .panel-head {
+            padding: 18px 18px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            color: var(--accent);
+            font-weight: 800;
+            letter-spacing: .2px;
+        }
+
+        .panel-note {
+            color: var(--muted);
+            font-size: .88rem;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+            padding: 18px;
+        }
+
+        .card {
+            border: 1px solid rgba(212, 175, 55, 0.12);
+            background: rgba(8, 14, 10, 0.82);
+            border-radius: 18px;
+            padding: 16px;
+            min-height: 100%;
+        }
+
+        .card h3 {
+            font-size: 1rem;
+            color: var(--accent);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .kv {
+            display: grid;
+            grid-template-columns: 160px 1fr;
+            gap: 8px 14px;
+            line-height: 1.7;
+            font-size: .94rem;
+        }
+
+        .k {
+            color: var(--muted);
+            word-break: break-word;
+        }
+
+        .v {
+            color: var(--text);
+            word-break: break-word;
+        }
+
+        .v.muted {
+            color: #3a3a3a;
+        }
+        .v.good {
+            color: #2e7d32;
+        }
+        .v.warn {
+            color: #b85c00;
+        }
+        .v.bad {
+            color: #b00020;
+        }
+
+        .full {
+            grid-column: 1 / -1;
+        }
+
+        .rawbox {
+            display: grid;
+            gap: 10px;
+            padding: 0 18px 18px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 340px;
+            resize: vertical;
+            border-radius: 18px;
+            border: 1px solid rgba(212, 175, 55, 0.18);
+            background: rgba(8, 14, 10, 0.9);
+            color: #1a1a1a;
+            padding: 16px;
+            line-height: 1.85;
+            font-size: .93rem;
+            outline: none;
+            box-shadow: 0 0 16px rgba(212, 175, 55, 0.03) inset;
+            white-space: pre;
+        }
+
+        .foot {
+            margin-top: 14px;
+            color: var(--muted);
+            font-size: .86rem;
+            line-height: 1.8;
+            padding: 0 2px;
+        }
+
+        .mono {
+            direction: ltr;
+            unicode-bidi: plaintext;
+        }
+
+        @media (max-width: 860px) {
+            .cards {
+                grid-template-columns: 1fr;
+            }
+            .kv {
+                grid-template-columns: 1fr;
+                gap: 4px;
+            }
+            .controls {
+                grid-template-columns: 1fr;
+            }
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+
+<style id="site-back-style">.site-back{position:fixed;top:16px;right:16px;z-index:99999;width:44px;height:44px;border:1px solid rgba(255,255,255,.16);border-radius:50%;background:rgba(10,10,12,.92);color:#fff;display:grid;place-items:center;text-decoration:none;font:700 25px/1 Arial,sans-serif;box-shadow:0 12px 35px rgba(0,0,0,.45);backdrop-filter:blur(10px);transition:.2s}.site-back:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.35)}@media(max-width:600px){.site-back{top:12px;right:12px;width:42px;height:42px}}</style>
+</head>
+<body>
+    <style>.scanner-back{position:fixed;top:16px;right:16px;z-index:99999;width:44px;height:44px;border:1px solid rgba(0,255,102,.25);border-radius:50%;background:rgba(5,9,7,.94);color:#00ff66;display:grid;place-items:center;text-decoration:none;font:700 27px/1 Arial,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.5);backdrop-filter:blur(10px);transition:.2s}.scanner-back:hover{transform:translateY(-2px);border-color:rgba(0,255,102,.65);box-shadow:0 0 18px rgba(0,255,102,.18)}@media(max-width:600px){.scanner-back{top:12px;right:12px;width:42px;height:42px}}</style>
+    <a id="scannerBack" class="scanner-back" href="index.html" aria-label="بازگشت" title="بازگشت">‹</a>
+<a class="site-back" href="index.html" aria-label="بازگشت" title="بازگشت">‹</a>
+    <canvas id="matrix"></canvas>
+    <div class="grid"></div>
+    <div class="bg">
+        <svg viewBox="0 0 800 800" aria-hidden="true">
+            <circle cx="200" cy="200" r="150" fill="none" stroke="#d4af37" />
+            <circle cx="600" cy="300" r="200" fill="none" stroke="#d4af37" />
+            <circle cx="400" cy="600" r="180" fill="none" stroke="#d4af37" />
+            <path d="M0,400 Q400,200 800,400 T1600,400" stroke="#d4af37" fill="none" />
+        </svg>
+    </div>
+
+    <div class="wrap">
+        <section class="hero">
+            <div class="toprow">
+                <div class="brand">
+                    <h1>WENDIGOS CYBER</h1>
+                    <div class="sub">
+                        IP Intelligence Tool — اطلاعات عمومی و غیرفعال از چند منبع معتبر ترکیب می‌شود: موقعیت تقریبی، ASN، DNS معکوس، RDAP، رکوردهای DNS و آدرس متنی فارسی از مختصات.
+                    </div>
+                </div>
+                <div class="badge">Passive • Clean • Copyable</div>
+            </div>
+
+            <div class="controls">
+                <input id="target" class="input mono" placeholder="IP را وارد کنید، مثال: 8.8.8.8" autocomplete="off" spellcheck="false" />
+                <button id="scanBtn" class="btn btn-primary" onclick="scanTarget()">اسکن</button>
+                <button id="copyBtn" class="btn btn-ghost" onclick="copyRaw()" disabled>کپی خروجی</button>
+            </div>
+
+            <div id="status" class="status">آماده است.</div>
+        </section>
+
+        <section class="panel" id="resultPanel" style="display:none;">
+            <div class="panel-head">
+                <div class="panel-title">خروجی</div>
+                <div class="panel-note">خروجی نهایی به‌صورت متن قابل کپی نیز پایین همین بخش قرار می‌گیرد.</div>
+            </div>
+            <div class="cards" id="cards"></div>
+            <div class="rawbox">
+                <textarea id="rawOutput" readonly placeholder="پس از اسکن، خروجی متنی اینجا ظاهر می‌شود."></textarea>
+            </div>
+        </section>
+
+        <div class="foot">
+            نکته: از روی IP عمومی نمی‌توان همیشه «آدرس دقیقِ واقعی» به‌دست آورد؛ آدرسی که نشان داده می‌شود از روی مختصات تقریبی و سرویس‌های ژئوکدینگ ساخته می‌شود.
+        </div>
+    </div>
+
+    <script>
+        const el = (id) => document.getElementById(id);
+
+        function escapeHtml(text) {
+            return String(text ?? "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function pick(...vals) {
+            for (const val of vals) {
+                if (val !== undefined && val !== null && val !== "" && val !== "-") return val;
+            }
+            return "-";
+        }
+
+        function isIPv4(ip) {
+            return /^(\d{1,3}\.){3}\d{1,3}$/.test(ip) && ip.split(".").every(n => +n >= 0 && +n <= 255);
+        }
+
+        function isIPv6(ip) {
+            return /^[0-9a-fA-F:]+$/.test(ip) && ip.includes(":");
+        }
+
+        function isValidIP(ip) {
+            return isIPv4(ip) || isIPv6(ip);
+        }
+
+        function isPrivateOrReservedIP(ip) {
+            const lower = ip.toLowerCase();
+            if (isIPv4(ip)) {
+                const [a, b] = ip.split(".").map(Number);
+                if (a === 10) return true;
+                if (a === 127) return true;
+                if (a === 0) return true;
+                if (a === 169 && b === 254) return true;
+                if (a === 172 && b >= 16 && b <= 31) return true;
+                if (a === 192 && b === 168) return true;
+                if (a >= 224) return true;
+                return false;
+            }
+            if (isIPv6(ip)) {
+                if (lower === "::1") return true;
+                if (lower.startsWith("fe80")) return true;
+                if (lower.startsWith("fc") || lower.startsWith("fd")) return true;
+                if (lower.startsWith("2001:db8")) return true;
+                return false;
+            }
+            return true;
+        }
+
+        function ipv4ToPtr(ip) {
+            if (!isIPv4(ip)) return null;
+            return ip.split(".").reverse().join(".") + ".in-addr.arpa";
+        }
+
+        async function fetchJSON(url, timeout = 12000) {
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), timeout);
+            try {
+                const res = await fetch(url, { cache: "no-store", signal: controller.signal });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                return await res.json();
+            } finally {
+                clearTimeout(id);
+            }
+        }
+
+        async function fetchText(url, timeout = 12000) {
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), timeout);
+            try {
+                const res = await fetch(url, { cache: "no-store", signal: controller.signal });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                return await res.text();
+            } finally {
+                clearTimeout(id);
+            }
+        }
+
+        function normalizeRDAPEntity(entity) {
+            if (!entity) return null;
+            const roles = Array.isArray(entity.roles) ? entity.roles.join(", ") : "-";
+            const vcard = Array.isArray(entity.vcardArray) ? entity.vcardArray : null;
+            let name = "-";
+            let email = "-";
+            if (vcard && vcard[1]) {
+                for (const item of vcard[1]) {
+                    if (Array.isArray(item) && item[0] === "fn" && item[3]) name = item[3];
+                    if (Array.isArray(item) && item[0] === "email" && item[3]) email = item[3];
+                }
+            }
+            return { handle: entity.handle || "-", name, email, roles };
+        }
+
+        function formatList(val) {
+            if (!val) return "-";
+            if (Array.isArray(val)) return val.length ? val.join(", ") : "-";
+            return String(val);
+        }
+
+        function line(label, value) {
+            return `${label}: ${value ?? "-"}\n`;
+        }
+
+        function section(title) {
+            return `\n${title}\n${"─".repeat(Math.max(8, title.length))}\n`;
+        }
+
+        function setStatus(msg) {
+            el("status").textContent = msg;
+        }
+
+        async function getReverseDNS(ip) {
+            const ptr = ipv4ToPtr(ip);
+            if (!ptr) return "-";
+            try {
+                const data = await fetchJSON(`https://dns.google/resolve?name=${encodeURIComponent(ptr)}&type=PTR`);
+                const answers = Array.isArray(data.Answer) ? data.Answer : [];
+                const names = answers
+                    .filter(a => a && typeof a.data === "string")
+                    .map(a => a.data.replace(/\.$/, ""));
+                return names.length ? names.join(", ") : "-";
+            } catch {
+                return "-";
+            }
+        }
+
+        async function getRDAP(ip) {
+            try {
+                return await fetchJSON(`https://rdap.org/ip/${encodeURIComponent(ip)}`, 14000);
+            } catch {
+                return null;
+            }
+        }
+
+        async function getDNSRecords(hostname) {
+            const out = {};
+            const types = ["A", "AAAA", "NS", "MX", "TXT"];
+            for (const type of types) {
+                try {
+                    const data = await fetchJSON(`https://dns.google/resolve?name=${encodeURIComponent(hostname)}&type=${encodeURIComponent(type)}`, 10000);
+                    const answers = Array.isArray(data.Answer) ? data.Answer : [];
+                    out[type] = answers.map(a => a.data).filter(Boolean);
+                } catch {
+                    out[type] = [];
+                }
+            }
+            return out;
+        }
+
+        async function reverseGeocode(lat, lon) {
+            try {
+                const data = await fetchJSON(
+                    `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}&accept-language=fa`, 12000
+                );
+                return data && (data.display_name || data.name) ? data : null;
+            } catch {
+                return null;
+            }
+        }
+
+        function buildRawText(d) {
+            let out = "";
+            out += section("IP Intelligence Report");
+            out += line("IP", d.ip);
+            out += line("وضعیت", d.ipScope);
+            out += line("نسخه", d.version);
+
+            out += section("هویت شبکه");
+            out += line("ASN", d.asn);
+            out += line("نام ASN", d.asName);
+            out += line("ISP", d.isp);
+            out += line("سازمان", d.org);
+            out += line("دامنه سازمان", d.domain);
+            out += line("شبکه", d.network);
+            out += line("هاست‌نیم‌ها", formatList(d.hostnames));
+
+            out += section("موقعیت");
+            out += line("کشور", d.country);
+            out += line("کد کشور", d.countryCode);
+            out += line("قاره", d.continent);
+            out += line("استان/منطقه", d.region);
+            out += line("شهر", d.city);
+            out += line("کد پستی", d.postal);
+            out += line("UTC", d.utc);
+            out += line("منطقه زمانی", d.timezone);
+            out += line("مختصات", d.coords);
+            out += line("آدرس متنی فارسی", d.address);
+            out += line("پرچم", d.flag);
+
+            out += section("امنیت و نشانه‌ها");
+            out += line("Proxy", d.proxy);
+            out += line("VPN", d.vpn);
+            out += line("Tor", d.tor);
+            out += line("Hosting", d.hosting);
+            out += line("Mobile", d.mobile);
+            out += line("EU", d.eu);
+
+            out += section("DNS / RDAP");
+            out += line("DNS معکوس", d.reverseDns);
+            out += line("RDAP Handle", d.rdapHandle);
+            out += line("RDAP Name", d.rdapName);
+            out += line("RDAP Range", d.rdapRange);
+            out += line("RDAP Country", d.rdapCountry);
+            out += line("RDAP Status", d.rdapStatus);
+            out += line("A", formatList(d.dns?.A));
+            out += line("AAAA", formatList(d.dns?.AAAA));
+            out += line("NS", formatList(d.dns?.NS));
+            out += line("MX", formatList(d.dns?.MX));
+            out += line("TXT", formatList(d.dns?.TXT));
+
+            out += section("منابع");
+            out += line("Sources", d.sources.join(", "));
+
+            return out.trim();
+        }
+
+        function makeCard(title, items) {
+            const rows = items.map(([k, v, cls]) => `
+                <div class="k">${escapeHtml(k)}</div>
+                <div class="v ${cls || ""}">${escapeHtml(v)}</div>
+            `).join("");
+            return `
+                <article class="card">
+                    <h3>${escapeHtml(title)}</h3>
+                    <div class="kv">${rows}</div>
+                </article>
+            `;
+        }
+
+        async function scanTarget() {
+            const target = el("target").value.trim();
+            const resultPanel = el("resultPanel");
+            const cards = el("cards");
+            const rawOutput = el("rawOutput");
+            const copyBtn = el("copyBtn");
+            const scanBtn = el("scanBtn");
+
+            if (!target) {
+                setStatus("یک IP معتبر وارد کنید.");
+                return;
+            }
+            if (!isValidIP(target)) {
+                setStatus("فقط IP معتبر پذیرفته می‌شود.");
+                return;
+            }
+
+            setStatus("در حال دریافت و ترکیب داده‌ها از منابع عمومی...");
+            scanBtn.disabled = true;
+            copyBtn.disabled = true;
+            resultPanel.style.display = "none";
+            cards.innerHTML = "";
+            rawOutput.value = "";
+
+            try {
+                const reserved = isPrivateOrReservedIP(target);
+
+                // سه منبع IP + RDAP + DNS معکوس
+                const [ipwhoRes, ipapiRes, ipApiRes, rdapRes, rdnsRes] = await Promise.allSettled([
+                    fetchJSON(`https://ipwho.is/${encodeURIComponent(target)}`, 12000),
+                    fetchJSON(`https://ipapi.co/${encodeURIComponent(target)}/json/`, 12000),
+                    fetchJSON(`http://ip-api.com/json/${encodeURIComponent(target)}?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,asname,reverse,mobile,proxy,hosting,query`, 12000),
+                    getRDAP(target),
+                    getReverseDNS(target)
+                ]);
+
+                const ipwho = ipwhoRes.status === "fulfilled" ? ipwhoRes.value : null;
+                const ipapi = ipapiRes.status === "fulfilled" ? ipapiRes.value : null;
+                const ipApi = (ipApiRes.status === "fulfilled" && ipApiRes.value?.status !== "fail") ? ipApiRes.value : null;
+                const rdap = rdapRes.status === "fulfilled" ? rdapRes.value : null;
+                const reverseDns = rdnsRes.status === "fulfilled" ? rdnsRes.value : "-";
+
+                const ip = pick(ipwho?.ip, ipapi?.ip, ipApi?.query, target);
+                const version = isIPv4(ip) ? "IPv4" : "IPv6";
+                const ipScope = reserved ? "خصوصی / رزرو / لوکال" : "عمومی";
+
+                if (ipwho && ipwho.success === false) {
+                    setStatus("داده‌ی معتبری برای این IP پیدا نشد.");
+                    return;
+                }
+
+                // ترکیب موقعیت
+                const country = pick(ipwho?.country, ipApi?.country, ipapi?.country_name);
+                const countryCode = pick(ipwho?.country_code, ipApi?.countryCode, ipapi?.country_code);
+                const continent = pick(ipwho?.continent, ipapi?.continent_code, "-");
+                const region = pick(ipwho?.region, ipApi?.regionName, ipapi?.region);
+                const city = pick(ipwho?.city, ipApi?.city, ipapi?.city);
+                const postal = pick(ipwho?.postal, ipApi?.zip, ipapi?.postal);
+                const timezone = pick(ipwho?.timezone?.id, ipApi?.timezone, ipapi?.timezone);
+                const utc = pick(ipwho?.timezone?.utc, ipapi?.utc_offset, "-");
+                const lat = pick(ipwho?.latitude, ipApi?.lat, ipapi?.latitude);
+                const lon = pick(ipwho?.longitude, ipApi?.lon, ipapi?.longitude);
+                const coords = (lat !== "-" && lon !== "-") ? `${lat}, ${lon}` : "-";
+
+                // امنیت
+                const proxy = pick(
+                    ipwho?.security?.proxy === true ? "بله" : ipwho?.security?.proxy === false ? "خیر" : null,
+                    ipApi?.proxy === true ? "بله" : ipApi?.proxy === false ? "خیر" : null,
+                    ipapi?.proxy === true ? "بله" : ipapi?.proxy === false ? "خیر" : "-"
+                );
+                const vpn = pick(
+                    ipwho?.security?.vpn === true ? "بله" : ipwho?.security?.vpn === false ? "خیر" : null,
+                    "-"
+                );
+                const tor = pick(
+                    ipwho?.security?.tor === true ? "بله" : ipwho?.security?.tor === false ? "خیر" : "-"
+                );
+                const hosting = pick(
+                    ipwho?.security?.hosting === true ? "بله" : ipwho?.security?.hosting === false ? "خیر" : null,
+                    ipApi?.hosting === true ? "بله" : ipApi?.hosting === false ? "خیر" : null,
+                    ipapi?.hosting === true ? "بله" : ipapi?.hosting === false ? "خیر" : "-"
+                );
+                const mobile = pick(
+                    ipApi?.mobile === true ? "بله" : ipApi?.mobile === false ? "خیر" : null,
+                    ipapi?.mobile === true ? "بله" : ipapi?.mobile === false ? "خیر" : "-"
+                );
+                const eu = pick(ipwho?.is_eu === true ? "بله" : ipwho?.is_eu === false ? "خیر" : "-");
+                const flag = pick(ipwho?.flag?.emoji, "-");
+
+                // شبکه
+                const isp = pick(ipwho?.connection?.isp, ipApi?.isp, ipapi?.org);
+                const org = pick(ipwho?.connection?.org, ipApi?.org, ipapi?.org);
+                const domain = pick(ipwho?.connection?.domain, ipapi?.org_domain, "-");
+                const asn = pick(
+                    ipwho?.connection?.asn ? `AS${ipwho.connection.asn}` : null,
+                    ipApi?.as ? `AS${ipApi.as}` : null,
+                    ipapi?.asn,
+                    "-"
+                );
+                const asName = pick(ipwho?.connection?.asn_org, ipApi?.asname, ipapi?.asn_org, ipapi?.asname);
+                const network = pick(ipwho?.connection?.network, ipapi?.network, "-");
+
+                // hostnames
+                const hostnames = [];
+                if (Array.isArray(ipwho?.connection?.domains)) hostnames.push(...ipwho.connection.domains);
+                if (Array.isArray(ipwho?.connection?.hostnames)) hostnames.push(...ipwho.connection.hostnames);
+                if (ipwho?.connection?.domain) hostnames.push(ipwho.connection.domain);
+                if (ipApi?.reverse && ipApi.reverse !== ip) hostnames.push(ipApi.reverse);
+                const uniqueHostnames = [...new Set(hostnames.flat().filter(Boolean))];
+
+                // آدرس فارسی از مختصات
+                let address = "-";
+                let geo = null;
+                if (!reserved && lat !== "-" && lon !== "-") {
+                    geo = await reverseGeocode(lat, lon);
+                    address = pick(geo?.display_name, geo?.name, "-");
+                }
+
+                // DNS records
+                let dns = { A: [], AAAA: [], NS: [], MX: [], TXT: [] };
+                const firstHost = uniqueHostnames[0];
+                if (!reserved && firstHost) {
+                    dns = await getDNSRecords(firstHost);
+                }
+
+                // RDAP
+                let rdapHandle = "-", rdapName = "-", rdapRange = "-", rdapCountry = "-", rdapStatus = "-", rdapEntities = [];
+                if (rdap) {
+                    rdapHandle = pick(rdap.handle, "-");
+                    rdapName = pick(rdap.name, "-");
+                    rdapRange = [rdap.startAddress, rdap.endAddress].filter(Boolean).join(" - ") || "-";
+                    rdapCountry = pick(rdap.country, "-");
+                    rdapStatus = Array.isArray(rdap.status) ? rdap.status.join(", ") : pick(rdap.status, "-");
+                    rdapEntities = Array.isArray(rdap.entities) ? rdap.entities.map(normalizeRDAPEntity).filter(Boolean) : [];
+                }
+
+                const sources = ["ipwho.is", "ip-api.com", "ipapi.co", "rdap.org", "dns.google"];
+                if (geo) sources.push("nominatim.openstreetmap.org");
+
+                const data = {
+                    ip, version, ipScope, country, countryCode, continent, region, city, postal,
+                    timezone, utc, coords, address, flag, isp, org, domain, asn, asName, network,
+                    hostnames: uniqueHostnames, reverseDns, proxy, vpn, tor, hosting, mobile, eu,
+                    dns, rdapHandle, rdapName, rdapRange, rdapCountry, rdapStatus, rdapEntities, sources
+                };
+
+                const rawText = buildRawText(data);
+                rawOutput.value = rawText;
+                copyBtn.disabled = false;
+
+                // ساخت کارت‌ها
+                const entityRows = rdapEntities.length
+                    ? rdapEntities.slice(0, 4).map(e => `
+                        <div class="k mono">${escapeHtml(e.handle)}</div>
+                        <div class="v">${escapeHtml([e.name, e.roles, e.email].filter(x => x && x !== "-").join(" | ") || "-")}</div>
+                    `).join("")
+                    : `
+                        <div class="k">Entities</div>
+                        <div class="v muted">-</div>
+                    `;
+
+                const cardsArray = [
+                    makeCard("هویت IP", [
+                        ["IP", ip, "good"],
+                        ["نسخه", version],
+                        ["وضعیت", ipScope, reserved ? "warn" : "good"],
+                        ["ASN", asn, "good"],
+                        ["نام ASN", asName],
+                        ["ISP", isp],
+                        ["سازمان", org],
+                        ["دامنه سازمان", domain],
+                        ["شبکه", network]
+                    ]),
+                    makeCard("موقعیت", [
+                        ["کشور", country],
+                        ["کد کشور", countryCode],
+                        ["قاره", continent],
+                        ["استان / منطقه", region],
+                        ["شهر", city],
+                        ["کد پستی", postal],
+                        ["منطقه زمانی", timezone],
+                        ["UTC", utc],
+                        ["مختصات", coords],
+                        ["آدرس فارسی", address],
+                        ["پرچم", flag]
+                    ]),
+                    makeCard("امنیت و نشانه‌ها", [
+                        ["Proxy", proxy],
+                        ["VPN", vpn],
+                        ["Tor", tor],
+                        ["Hosting", hosting],
+                        ["Mobile", mobile],
+                        ["EU", eu]
+                    ]),
+                    makeCard("DNS و RDAP", [
+                        ["DNS معکوس", reverseDns],
+                        ["RDAP Handle", rdapHandle],
+                        ["RDAP Name", rdapName],
+                        ["RDAP Range", rdapRange],
+                        ["RDAP Country", rdapCountry],
+                        ["RDAP Status", rdapStatus]
+                    ]),
+                    makeCard("رکوردهای DNS", [
+                        ["A", formatList(dns.A)],
+                        ["AAAA", formatList(dns.AAAA)],
+                        ["NS", formatList(dns.NS)],
+                        ["MX", formatList(dns.MX)],
+                        ["TXT", formatList(dns.TXT)]
+                    ]),
+                    `<article class="card full">
+                        <h3>RDAP Entities</h3>
+                        <div class="kv">${entityRows}</div>
+                    </article>`
+                ];
+
+                cards.innerHTML = cardsArray.join("");
+
+                resultPanel.style.display = "block";
+                setStatus(reserved
+                    ? "IP خصوصی/رزرو شده است. اطلاعات عمومی محدود نمایش داده شد."
+                    : "اطلاعات ترکیب شد و خروجی متنی آماده است."
+                );
+            } catch (err) {
+                console.error(err);
+                setStatus("خطا در دریافت اطلاعات. ممکن است یکی از منابع در دسترس نباشد.");
+            } finally {
+                scanBtn.disabled = false;
+            }
+        }
+
+        async function copyRaw() {
+            const txt = el("rawOutput").value.trim();
+            if (!txt) return;
+            try {
+                await navigator.clipboard.writeText(txt);
+                setStatus("خروجی متنی کپی شد.");
+            } catch {
+                el("rawOutput").select();
+                document.execCommand("copy");
+                setStatus("خروجی متنی کپی شد.");
+            }
+        }
+
+        el("target").addEventListener("keydown", (e) => {
+            if (e.key === "Enter") scanTarget();
+        });
+
+        // ماتریکس سبز روی زمینه تیره
+        (function matrixEffect() {
+            const canvas = el("matrix");
+            const ctx = canvas.getContext("2d");
+            let w = window.innerWidth;
+            let h = window.innerHeight;
+            canvas.width = w;
+            canvas.height = h;
+
+            const chars = "ｦｧｨｩｪｫｬｭｮｯｰｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&";
+            const fontSize = 16;
+            let columns = Math.floor(w / fontSize);
+            let drops = Array.from({ length: columns }, () => Math.random() * h / fontSize);
+
+            function draw() {
+                ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
+                ctx.fillRect(0, 0, w, h);
+                ctx.fillStyle = "#00ff66";
+                ctx.font = `${fontSize}px monospace`;
+
+                for (let i = 0; i < drops.length; i++) {
+                    const text = chars[Math.floor(Math.random() * chars.length)];
+                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                    if (drops[i] * fontSize > h && Math.random() > 0.975) drops[i] = 0;
+                    drops[i]++;
+                }
+            }
+
+            setInterval(draw, 40);
+
+            window.addEventListener("resize", () => {
+                w = window.innerWidth;
+                h = window.innerHeight;
+                canvas.width = w;
+                canvas.height = h;
+                columns = Math.floor(w / fontSize);
+                drops = Array.from({ length: columns }, () => Math.random() * h / fontSize);
+            });
+        })();
+    </script>
+</body>
+</html>

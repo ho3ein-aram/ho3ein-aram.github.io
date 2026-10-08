@@ -1,0 +1,1865 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#000000">
+<title>مانیتور فیشینگ</title>
+<style>
+  :root{
+    --bg:#000;
+    --card:#0a0a0a;
+    --card-h:#0f0f0f;
+    --brd:#1a1a1a;
+    --brd-h:#2a2a2a;
+    --ink:#ffffff;
+    --ink2:#a1a1aa;
+    --ink3:#52525b;
+    --ok:#22c55e;
+    --err:#ef4444;
+    --info:#3b82f6;
+    --warn:#f59e0b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,"Iranian Sans",Arial,sans-serif;
+    background:var(--bg);
+    min-height:100dvh;color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    padding:16px 14px 60px;
+  }
+
+  .wrap{max-width:960px;margin:0 auto}
+
+  /* ============ Header ============ */
+  header.top{
+    display:flex;align-items:center;justify-content:space-between;
+    gap:12px;flex-wrap:wrap;
+    background:var(--card);
+    border:1px solid var(--brd);
+    border-radius:16px;
+    padding:12px 16px;
+    margin-bottom:14px;
+    transition:border-color .2s ease;
+  }
+  header.top:hover{border-color:var(--brd-h)}
+  .brand{display:flex;align-items:center;gap:11px;min-width:0}
+  .brand-logo{
+    width:40px;height:40px;flex:0 0 40px;border-radius:11px;
+    display:flex;align-items:center;justify-content:center;
+    background:#111;border:1px solid var(--brd-h);
+    color:var(--info);
+  }
+  .brand-logo svg{width:22px;height:22px}
+  .brand h1{font-size:15.5px;font-weight:800;letter-spacing:.2px;color:#fff}
+  .brand p{font-size:12px;color:var(--ink3);margin-top:2px}
+
+  nav.tabs{display:flex;gap:4px;background:#0a0a0a;padding:4px;border-radius:11px;border:1px solid var(--brd)}
+  nav.tabs button{
+    border:0;background:transparent;color:var(--ink2);
+    font-family:inherit;font-size:13px;font-weight:700;
+    padding:8px 14px;border-radius:8px;cursor:pointer;
+    transition:all .18s ease;
+    display:inline-flex;align-items:center;gap:6px;
+  }
+  nav.tabs button svg{width:15px;height:15px}
+  nav.tabs button.active{
+    background:#1a1a1a;color:#fff;border:1px solid var(--brd-h);
+  }
+  nav.tabs button:not(.active):hover{background:#111;color:#fff}
+
+  /* ============ Cards ============ */
+  .card{
+    background:var(--card);
+    border:1px solid var(--brd);
+    border-radius:16px;
+    padding:18px 18px;
+    transition:border-color .2s ease;
+  }
+  .card:hover{border-color:var(--brd-h)}
+  .card + .card{margin-top:12px}
+
+  .card-title{
+    display:flex;align-items:center;gap:10px;
+    font-size:14.5px;font-weight:800;margin-bottom:14px;
+    color:#fff;
+  }
+  .card-title .ic{
+    width:28px;height:28px;border-radius:9px;
+    display:flex;align-items:center;justify-content:center;
+    background:#111;border:1px solid var(--brd-h);
+    color:var(--info);
+  }
+  .card-title .ic svg{width:15px;height:15px}
+  .card-title .num{
+    margin-inline-start:auto;font-size:11.5px;font-weight:700;
+    color:var(--ink2);background:#111;
+    padding:4px 10px;border-radius:999px;
+    border:1px solid var(--brd);
+  }
+  .card-sub{font-size:12.5px;color:var(--ink3);margin-bottom:12px;line-height:1.7}
+
+  /* ============ Form ============ */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+
+  .field{display:flex;flex-direction:column;gap:6px}
+  .field label{font-size:12.5px;font-weight:700;color:var(--ink2)}
+  .field label .hint{color:var(--ink3);font-weight:500;font-size:11.5px;margin-inline-start:4px}
+  .field input,
+  .field select{
+    width:100%;border:1px solid var(--brd);background:#000;
+    padding:10px 12px;border-radius:10px;
+    font-family:inherit;font-size:13.5px;color:#fff;
+    transition:border-color .18s ease, background .18s ease;
+    outline:none;
+    font-variant-numeric:tabular-nums;
+  }
+  .field input.ltr{direction:ltr;text-align:left}
+  .field input::placeholder{color:#3f3f46}
+  .field input:focus,
+  .field select:focus{
+    border-color:var(--info);
+    background:#050505;
+  }
+  .field select{cursor:pointer}
+  .field .row{display:flex;gap:8px}
+  .field .row input{flex:1}
+
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:7px;
+    border:1px solid transparent;cursor:pointer;font-family:inherit;
+    font-size:13px;font-weight:700;
+    padding:10px 16px;border-radius:10px;
+    transition:all .18s ease;white-space:nowrap;
+    text-decoration:none;
+  }
+  .btn svg{width:15px;height:15px}
+  .btn.primary{background:#fff;color:#000;border-color:#fff}
+  .btn.primary:hover{background:#e5e5e5;border-color:#e5e5e5}
+  .btn.primary:active{transform:scale(.98)}
+  .btn.primary:disabled{opacity:.4;cursor:not-allowed;transform:none}
+  .btn.ghost{background:#0f0f0f;color:#fff;border-color:var(--brd)}
+  .btn.ghost:hover{background:#181818;border-color:var(--brd-h)}
+  .btn.ghost:active{transform:scale(.98)}
+  .btn.mini{padding:7px 11px;font-size:12px;border-radius:9px}
+  .btn.mini svg{width:13px;height:13px}
+
+  .icon-btn{
+    width:32px;height:32px;border-radius:9px;
+    border:1px solid var(--brd);background:#0f0f0f;
+    display:inline-flex;align-items:center;justify-content:center;
+    cursor:pointer;color:var(--ink2);
+    transition:all .18s ease;
+  }
+  .icon-btn:hover{color:#fff;border-color:var(--brd-h);background:#181818}
+  .icon-btn:active{transform:scale(.95)}
+  .icon-btn svg{width:15px;height:15px}
+
+  /* ============ Steps ============ */
+  .steps{counter-reset:s;display:flex;flex-direction:column;gap:8px}
+  .step{
+    display:flex;gap:12px;align-items:flex-start;
+    background:#050505;
+    border:1px solid var(--brd);
+    border-radius:11px;padding:11px 13px;
+    transition:border-color .2s ease;
+  }
+  .step:hover{border-color:var(--brd-h)}
+  .step::before{
+    counter-increment:s;content:counter(s);
+    flex:0 0 24px;width:24px;height:24px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    background:#111;color:#fff;border:1px solid var(--brd-h);
+    font-size:12px;font-weight:800;
+  }
+  .step-body{font-size:12.8px;line-height:1.9;color:var(--ink2);min-width:0}
+  .step-body b{color:#fff}
+  .step-body a{color:var(--info);font-weight:700;text-decoration:none;border-bottom:1px dashed currentColor;word-break:break-all}
+  .step-body a:hover{color:#60a5fa}
+  .chip{
+    display:inline-block;font-size:11.5px;font-weight:700;
+    background:#111;color:#fff;
+    padding:2px 8px;border-radius:6px;margin:0 2px;
+    direction:ltr;font-family:ui-monospace,Menlo,Consolas,monospace;
+    border:1px solid var(--brd-h);
+  }
+  .chip.ok{color:var(--ok);border-color:rgba(34,197,94,.3)}
+
+  /* ============ Preview ============ */
+  .link-preview{
+    display:flex;gap:8px;align-items:stretch;
+    background:#000;color:#d4d4d8;
+    border-radius:12px;padding:12px 14px;
+    direction:ltr;text-align:left;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:12px;line-height:1.7;
+    overflow:hidden;
+    word-break:break-all;
+    min-height:56px;
+    border:1px solid var(--brd);
+  }
+  .link-preview .txt{flex:1;max-height:130px;overflow:auto}
+  .link-preview.empty{color:#52525b;font-style:italic;justify-content:center;align-items:center}
+  .link-preview::-webkit-scrollbar,
+  .link-preview .txt::-webkit-scrollbar{width:5px;height:5px}
+  .link-preview .txt::-webkit-scrollbar-thumb{background:#27272a;border-radius:3px}
+
+  .badge-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .bdg{
+    display:inline-flex;align-items:center;gap:5px;
+    font-size:11.5px;font-weight:700;
+    background:#0f0f0f;color:#fff;
+    padding:4px 10px;border-radius:999px;
+    border:1px solid var(--brd);
+  }
+  .bdg.ok{color:var(--ok);border-color:rgba(34,197,94,.3)}
+  .bdg.err{color:var(--err);border-color:rgba(239,68,68,.3)}
+  .bdg.info{color:var(--info);border-color:rgba(59,130,246,.3)}
+  .bdg svg{width:12px;height:12px}
+
+  /* ============ Monitor ============ */
+  .stat{
+    display:flex;flex-direction:column;gap:3px;
+    background:#050505;
+    border:1px solid var(--brd);
+    border-radius:11px;padding:10px 14px;min-width:96px;
+    transition:border-color .2s ease;
+  }
+  .stat:hover{border-color:var(--brd-h)}
+  .stat .k{font-size:11.5px;color:var(--ink3);font-weight:600}
+  .stat .v{font-size:17px;font-weight:800;color:#fff;font-variant-numeric:tabular-nums}
+
+  /* Reports */
+  .issues{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+  .issue{
+    background:#050505;
+    border:1px solid var(--brd);
+    border-radius:13px;
+    padding:0;
+    transition:border-color .2s ease, background .2s ease;
+    position:relative;overflow:hidden;
+  }
+  .issue:hover{border-color:var(--brd-h);background:#0a0a0a}
+  .issue-head{
+    display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+    padding:12px 14px;
+    cursor:pointer;
+    transition:background .18s ease;
+  }
+  .issue-head:hover{background:#0a0a0a}
+  .issue-title{font-size:13.5px;font-weight:800;color:#fff;direction:ltr}
+  .issue-title .num-badge{
+    display:inline-block;font-size:11px;font-weight:800;
+    padding:2px 7px;border-radius:6px;
+    background:var(--info);color:#fff;
+    margin-inline-end:6px;
+    font-family:ui-monospace,Menlo,Consolas,monospace;
+    direction:ltr;
+  }
+  .issue-meta{
+    font-size:11.5px;color:var(--ink3);
+    font-variant-numeric:tabular-nums;
+    direction:ltr;
+    margin-inline-start:auto;
+  }
+  .issue-actions{display:flex;gap:5px;margin-inline-start:8px}
+  .act-btn{
+    width:28px;height:28px;border-radius:8px;
+    border:1px solid var(--brd);background:#0f0f0f;
+    display:inline-flex;align-items:center;justify-content:center;
+    cursor:pointer;color:var(--ink2);
+    transition:all .18s ease;
+  }
+  .act-btn:hover{color:#fff;border-color:var(--brd-h);background:#1a1a1a}
+  .act-btn:active{transform:scale(.92)}
+  .act-btn svg{width:13px;height:13px}
+  .act-btn.ok:hover{color:var(--ok);border-color:rgba(34,197,94,.4)}
+  .act-btn.info:hover{color:var(--info);border-color:rgba(59,130,246,.4)}
+  .act-btn.warn:hover{color:var(--warn);border-color:rgba(245,158,11,.4)}
+
+  .issue-tags{
+    display:flex;flex-wrap:wrap;gap:6px;
+    padding:0 14px 12px;
+  }
+  .tag{
+    font-size:11px;font-weight:700;
+    padding:3px 9px;border-radius:7px;
+    background:#111;color:#fff;
+    border:1px solid var(--brd);
+    direction:ltr;font-family:ui-monospace,Menlo,Consolas,monospace;
+    max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .tag.user{color:#f472b6;border-color:rgba(244,114,182,.25)}
+  .tag.ip{color:var(--ok);border-color:rgba(34,197,94,.25)}
+  .tag.loc{color:var(--info);border-color:rgba(59,130,246,.25)}
+  .tag.tm{color:var(--ink2)}
+
+  .issue-body{
+    border-top:1px solid var(--brd);
+    padding:12px 14px;
+    display:none;
+  }
+  .issue.open .issue-body{display:block;animation:fadeIn .2s ease}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+  .issue-body .label{
+    font-size:11px;font-weight:700;color:var(--ink3);
+    text-transform:uppercase;letter-spacing:.6px;
+    margin-bottom:6px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .issue-body .label .btn-anal{
+    margin-inline-start:auto;
+  }
+  pre.code{
+    background:#000;color:#e4e4e7;
+    border-radius:10px;padding:12px 14px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:11.5px;line-height:1.7;
+    direction:ltr;text-align:left;
+    max-height:400px;overflow:auto;
+    white-space:pre-wrap;word-break:break-word;
+    border:1px solid var(--brd);
+  }
+  pre.code::-webkit-scrollbar{width:6px;height:6px}
+  pre.code::-webkit-scrollbar-thumb{background:#27272a;border-radius:3px}
+
+  /* ============ IP Analysis ============ */
+  .ip-analysis{
+    margin-top:12px;margin-bottom:12px;
+    display:none;
+    padding-top:12px;
+    border-top:1px dashed var(--brd-h);
+  }
+  .ip-analysis.show{display:block;animation:fadeIn .25s ease}
+
+  .ip-block{
+    background:#000;
+    border:1px solid var(--brd);
+    border-radius:11px;
+    padding:12px;
+    margin-bottom:10px;
+  }
+  .ip-header{
+    display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+    margin-bottom:10px;
+    padding-bottom:10px;
+    border-bottom:1px solid var(--brd);
+  }
+  .ip-header .ipv{
+    font-size:13px;font-weight:800;color:#fff;
+    font-family:ui-monospace,Menlo,Consolas,monospace;
+    direction:ltr;
+    word-break:break-all;
+    flex:1;min-width:0;
+  }
+  .ip-header .ipv.ipv6{color:#60a5fa}
+  .ip-header .ipv.ipv4{color:#4ade80}
+  .ip-header .badges{display:flex;gap:5px;flex-wrap:wrap}
+  .ip-header .badge{
+    font-size:10.5px;font-weight:700;
+    padding:2px 8px;border-radius:6px;
+    background:#111;color:var(--ink2);
+    border:1px solid var(--brd);
+    direction:ltr;
+    font-family:ui-monospace,Menlo,Consolas,monospace;
+    white-space:nowrap;
+  }
+  .ip-header .badge.pub{color:var(--ok);border-color:rgba(34,197,94,.3)}
+  .ip-header .badge.loc{color:var(--info);border-color:rgba(59,130,246,.3)}
+  .ip-header .badge.v6{color:#60a5fa;border-color:rgba(96,165,250,.3)}
+
+  .api-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+    gap:8px;
+  }
+  @media(max-width:640px){.api-grid{grid-template-columns:1fr}}
+
+  .api-card{
+    background:#0a0a0a;
+    border:1px solid var(--brd);
+    border-radius:9px;
+    padding:10px;
+    font-size:12px;
+    transition:border-color .18s ease;
+  }
+  .api-card:hover{border-color:var(--brd-h)}
+  .api-card.ok{border-color:rgba(34,197,94,.25)}
+  .api-card.err{border-color:rgba(239,68,68,.2)}
+  .api-card.loading{border-color:rgba(59,130,246,.3)}
+
+  .api-name{
+    font-size:11px;font-weight:700;color:var(--info);
+    margin-bottom:7px;
+    display:flex;justify-content:space-between;align-items:center;gap:6px;
+    direction:ltr;
+  }
+  .api-name .st{
+    font-size:10px;font-weight:700;
+    padding:1px 6px;border-radius:5px;
+    background:#111;color:var(--ink3);
+    border:1px solid var(--brd);
+  }
+  .api-name .st.ok{color:var(--ok);border-color:rgba(34,197,94,.3)}
+  .api-name .st.err{color:var(--err);border-color:rgba(239,68,68,.3)}
+
+  .api-rows{display:flex;flex-direction:column;gap:3px}
+  .api-row{
+    display:flex;gap:6px;font-size:11.5px;line-height:1.55;
+    align-items:flex-start;
+  }
+  .api-row .k{
+    color:var(--ink3);font-weight:600;
+    flex:0 0 62px;min-width:62px;
+    direction:ltr;text-align:left;
+  }
+  .api-row .v{
+    color:#e4e4e7;direction:ltr;text-align:left;
+    word-break:break-word;flex:1;min-width:0;
+  }
+  .api-row .v.muted{color:var(--ink3);font-style:italic}
+
+  .api-err{
+    color:var(--err);font-size:11px;
+    padding:4px 0;
+    direction:ltr;text-align:left;
+    word-break:break-word;
+  }
+  .api-load{
+    color:var(--ink3);font-size:11px;
+    display:flex;align-items:center;gap:7px;
+    padding:4px 0;
+    direction:ltr;
+  }
+  .api-load .sp{width:11px;height:11px;border-width:1.5px}
+
+  /* ============ Empty ============ */
+  .empty{text-align:center;padding:30px 10px;color:var(--ink3)}
+  .empty svg{width:100px;height:100px;margin-bottom:10px;opacity:.6;color:#27272a}
+  .empty .et{font-size:14px;font-weight:700;color:var(--ink2);margin-bottom:4px}
+  .empty .es{font-size:12.5px;line-height:1.7}
+
+  /* ============ Toolbar ============ */
+  .toolbar{
+    display:flex;flex-wrap:wrap;gap:8px;align-items:center;
+    margin-bottom:12px;
+  }
+  .toolbar .search,
+  .toolbar .sort{
+    border:1px solid var(--brd);background:#050505;color:#fff;
+    padding:9px 12px;border-radius:10px;
+    font-family:inherit;font-size:13px;
+    outline:none;transition:border-color .18s ease;
+  }
+  .toolbar .search{flex:1;min-width:160px}
+  .toolbar .search::placeholder{color:#3f3f46}
+  .toolbar .search:focus,
+  .toolbar .sort:focus{border-color:var(--info)}
+  .toolbar .sort{cursor:pointer}
+
+  /* ============ Toast ============ */
+  #toast{
+    position:fixed;left:50%;bottom:24px;transform:translate(-50%,80px);
+    background:#0f0f0f;color:#fff;
+    padding:11px 18px;border-radius:11px;
+    font-size:13px;font-weight:700;
+    border:1px solid var(--brd-h);
+    opacity:0;pointer-events:none;
+    transition:all .25s ease;
+    z-index:9999;
+    display:flex;align-items:center;gap:8px;
+    max-width:calc(100vw - 32px);
+  }
+  #toast.show{opacity:1;transform:translate(-50%,0)}
+  #toast svg{width:15px;height:15px}
+  #toast.ok{border-color:rgba(34,197,94,.4)}
+  #toast.ok svg{color:var(--ok)}
+  #toast.err{border-color:rgba(239,68,68,.4)}
+  #toast.err svg{color:var(--err)}
+  #toast.info{border-color:rgba(59,130,246,.4)}
+  #toast.info svg{color:var(--info)}
+
+  .spin{
+    width:14px;height:14px;border-radius:50%;
+    border:2px solid #27272a;
+    border-top-color:#fff;
+    animation:sp .7s linear infinite;
+    display:inline-block;
+  }
+  @keyframes sp{to{transform:rotate(360deg)}}
+
+  section.tab{display:none}
+  section.tab.active{display:block}
+
+  .switch{display:inline-flex;align-items:center;gap:8px;cursor:pointer;user-select:none;font-size:12.5px;font-weight:700;color:var(--ink2)}
+  .switch input{display:none}
+  .switch .track{
+    width:34px;height:19px;border-radius:999px;background:#1a1a1a;
+    border:1px solid var(--brd-h);
+    position:relative;transition:all .2s ease;
+  }
+  .switch .track::after{
+    content:"";position:absolute;top:2px;right:2px;
+    width:13px;height:13px;border-radius:50%;background:#52525b;
+    transition:all .2s ease;
+  }
+  .switch input:checked + .track{background:rgba(34,197,94,.15);border-color:rgba(34,197,94,.4)}
+  .switch input:checked + .track::after{transform:translateX(-15px);background:var(--ok)}
+
+  .row-between{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .muted{color:var(--ink3);font-size:12px;line-height:1.7}
+  .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ink3);margin-inline-end:6px;vertical-align:middle}
+  .dot.ok{background:var(--ok)}
+  .dot.err{background:var(--err)}
+  .dot.info{background:var(--info)}
+
+  .warn-box{
+    display:flex;gap:10px;align-items:flex-start;
+    background:#0a0a0a;
+    border:1px solid rgba(245,158,11,.25);
+    border-radius:11px;padding:10px 12px;
+    font-size:12.5px;line-height:1.75;color:#d4a373;
+    margin-top:10px;
+  }
+  .warn-box svg{width:15px;height:15px;flex:0 0 15px;margin-top:2px;color:var(--warn)}
+
+  @media (max-width:520px){
+    body{padding:12px 10px 50px}
+    header.top{padding:10px 12px;border-radius:14px}
+    .brand h1{font-size:14.5px}
+    .brand p{display:none}
+    nav.tabs button{padding:7px 11px;font-size:12.5px}
+    .card{padding:15px 14px;border-radius:14px}
+    .issue-head{padding:10px 12px}
+    .issue-tags{padding:0 12px 10px}
+    .issue-body{padding:10px 12px}
+    .stat{min-width:76px;padding:8px 11px}
+    .stat .v{font-size:15px}
+    .issue-meta{font-size:10.5px}
+    .issue-title{font-size:12.5px}
+    .api-row .k{flex-basis:52px;min-width:52px;font-size:11px}
+    .api-row{font-size:11px}
+  }
+</style>
+<style>.site-back{position:fixed;top:12px;left:12px;z-index:99999;display:inline-flex;align-items:center;gap:7px;padding:10px 13px;border:1px solid #23533a;border-radius:12px;background:#07110beF;color:#b8f5cf;text-decoration:none;font:700 13px system-ui;box-shadow:0 8px 24px #0008}.site-back:hover{background:#10291b}
+.site-back{position:fixed!important;top:14px!important;right:14px!important;left:auto!important;z-index:9999!important;width:46px!important;height:46px!important;display:grid!important;place-items:center!important;padding:0!important;border:1px solid #343a40!important;border-radius:50%!important;background:#0b0d10ee!important;color:#e5e7eb!important;text-decoration:none!important;font:32px/1 Arial,sans-serif!important;box-shadow:0 4px 18px #0009!important;backdrop-filter:blur(8px)!important}
+</style>
+</head>
+<body>
+<a class="site-back" href="index.html" aria-label="بازگشت" title="بازگشت">‹</a>
+
+<div class="wrap">
+
+  <!-- ==================== HEADER ==================== -->
+  <header class="top">
+    <div class="brand">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="M9 12l2 2 4-4"/>
+        </svg>
+      </div>
+      <div>
+        <h1>مانیتور فیشینگ</h1>
+        <p>ساخت لینک + رصد زنده گزارش‌ها + تحلیل IP</p>
+      </div>
+    </div>
+    <nav class="tabs">
+      <button data-tab="build" class="active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+        </svg>
+        ساخت لینک
+      </button>
+      <button data-tab="monitor">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 3v18h18"/>
+          <path d="M7 14l4-4 3 3 6-6"/>
+        </svg>
+        مانیتور
+      </button>
+    </nav>
+  </header>
+
+  <!-- ==================== TAB: BUILD ==================== -->
+  <section id="tab-build" class="tab active">
+
+    <div class="card">
+      <div class="card-title">
+        <div class="ic">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 16v-4M12 8h.01"/>
+          </svg>
+        </div>
+        راهنمای ساخت کلید گیت‌هاب
+        <span class="num">۴ مرحله</span>
+      </div>
+      <div class="card-sub">فقط یک‌بار لازم است. کلید را جای امن نگه دار و در URL عمومی به اشتراک نگذار.</div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-body">
+            وارد صفحه ساخت کلید شو:
+            <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a>
+            <br>نام و توضیحات مهم نیست.
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-body">
+            در بخش <b>Repository access</b> گزینه‌ی
+            <span class="chip">Only select repositories</span>
+            را انتخاب کن، سپس <b>مخزن خصوصی</b> موردنظرت را انتخاب کن.
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-body">
+            از بخش <b>Permissions</b> → <b>Repository permissions</b>، گزینه‌ی
+            <span class="chip">Issues</span>
+            را روی <span class="chip ok">Read and write</span> بگذار.
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-body">
+            دکمه‌ی <b>Generate token</b> را بزن و کلیدی که به شکل
+            <span class="chip">github_pat_...</span>
+            است را کپی کن.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <div class="ic">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9"/>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+          </svg>
+        </div>
+        اطلاعات لینک
+      </div>
+
+      <div class="grid">
+        <div class="field">
+          <label>آدرس صفحه فیشینگ <span class="hint">مثال: https://user.github.io/repo/page.html</span></label>
+          <input id="f-base" type="url" class="ltr" placeholder="https://example.github.io/Fishing" value="">
+        </div>
+        <div class="field">
+          <label>کلید گیت‌هاب <span class="hint">github_pat_...</span></label>
+          <input id="f-token" type="password" class="ltr" placeholder="github_pat_..." autocomplete="off">
+        </div>
+        <div class="field">
+          <label>مالک مخزن (Owner)</label>
+          <input id="f-owner" type="text" class="ltr" placeholder="WendigosCyber">
+        </div>
+        <div class="field">
+          <label>نام مخزن (Repo)</label>
+          <input id="f-repo" type="text" class="ltr" placeholder="WendigosCyber">
+        </div>
+        <div class="field">
+          <label>شناسه کاربر <span class="hint">اختیاری</span></label>
+          <input id="f-user" type="text" class="ltr" placeholder="mobin">
+        </div>
+        <div class="field">
+          <label>فرمت لینک</label>
+          <select id="f-format">
+            <option value="raw">کوتاه (0xTk_VALUE)</option>
+            <option value="std">استاندارد (?0xTk=VALUE)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="warn-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+          <path d="M12 9v4M12 17h.01"/>
+        </svg>
+        <div>کلید داخل URL قرار می‌گیرد. این لینک را فقط با افراد مورد اعتماد به اشتراک بگذار و در شبکه‌های عمومی منتشر نکن.</div>
+      </div>
+
+      <div class="row-between" style="margin-top:14px">
+        <label class="switch">
+          <input type="checkbox" id="f-save">
+          <span class="track"></span>
+          ذخیره اطلاعات در همین مرورگر
+        </label>
+        <div style="display:flex;gap:8px">
+          <button class="btn ghost mini" id="f-clear">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+            </svg>
+            پاک کردن
+          </button>
+          <button class="btn primary mini" id="f-build">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+            ساخت لینک
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <div class="ic">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <path d="M3 9h18"/>
+            <path d="M9 21V9"/>
+          </svg>
+        </div>
+        پیش‌نمایش لینک
+        <span class="num" id="pv-len">۰ کاراکتر</span>
+      </div>
+
+      <div id="pv-box" class="link-preview empty">
+        <span>هنوز لینکی ساخته نشده</span>
+      </div>
+
+      <div class="badge-row" id="pv-badges"></div>
+
+      <div class="row-between" style="margin-top:14px">
+        <div class="muted" id="pv-hint">فرم را پر کن و دکمه ساخت لینک را بزن.</div>
+        <div style="display:flex;gap:8px">
+          <button class="btn ghost mini" id="pv-open" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+              <path d="M15 3h6v6M10 14L21 3"/>
+            </svg>
+            باز کردن
+          </button>
+          <button class="btn primary mini" id="pv-copy" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2"/>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+            کپی لینک
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ==================== TAB: MONITOR ==================== -->
+  <section id="tab-monitor" class="tab">
+
+    <div class="card">
+      <div class="card-title">
+        <div class="ic">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
+            <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
+            <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+            <path d="M12 20h.01"/>
+          </svg>
+        </div>
+        اتصال به مخزن
+      </div>
+
+      <div class="grid">
+        <div class="field" style="grid-column:1/-1">
+          <label>لینک فیشینگ <span class="hint">اختیاری — برای پر شدن خودکار مقادیر</span></label>
+          <div class="row">
+            <input id="m-paste" type="text" class="ltr" placeholder="لینک ساخته‌شده را اینجا بچسبان…">
+            <button class="icon-btn" id="m-parse" title="استخراج">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <path d="M7 10l5 5 5-5"/>
+                <path d="M12 15V3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="field">
+          <label>کلید گیت‌هاب</label>
+          <input id="m-token" type="password" class="ltr" placeholder="github_pat_..." autocomplete="off">
+        </div>
+        <div class="field">
+          <label>مالک مخزن</label>
+          <input id="m-owner" type="text" class="ltr" placeholder="WendigosCyber">
+        </div>
+        <div class="field">
+          <label>نام مخزن</label>
+          <input id="m-repo" type="text" class="ltr" placeholder="WendigosCyber">
+        </div>
+        <div class="field" style="display:flex;flex-direction:column;justify-content:flex-end">
+          <label>&nbsp;</label>
+          <button class="btn primary" id="m-load" style="width:100%">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12a9 9 0 1 1-6.22-8.56"/>
+              <path d="M21 3v6h-6"/>
+            </svg>
+            بارگذاری گزارش‌ها
+          </button>
+        </div>
+      </div>
+
+      <div class="row-between" style="margin-top:12px">
+        <label class="switch">
+          <input type="checkbox" id="m-auto">
+          <span class="track"></span>
+          به‌روزرسانی خودکار (هر ۱۵ ثانیه)
+        </label>
+        <div class="muted" id="m-status"><span class="dot"></span>متصل نیست</div>
+      </div>
+    </div>
+
+    <div class="card" id="m-stats-card" style="display:none">
+      <div class="card-title">
+        <div class="ic">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 3v18h18"/>
+            <rect x="7" y="10" width="3" height="7"/>
+            <rect x="12" y="6" width="3" height="11"/>
+            <rect x="17" y="13" width="3" height="4"/>
+          </svg>
+        </div>
+        آمار
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <div class="stat"><span class="k">کل گزارش‌ها</span><span class="v" id="st-total">۰</span></div>
+        <div class="stat"><span class="k">امروز</span><span class="v" id="st-today">۰</span></div>
+        <div class="stat"><span class="k">با آی‌پی</span><span class="v" id="st-ip">۰</span></div>
+        <div class="stat"><span class="k">با موقعیت</span><span class="v" id="st-loc">۰</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <div class="ic">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <path d="M14 2v6h6"/>
+            <path d="M9 13h6M9 17h4"/>
+          </svg>
+        </div>
+        گزارش‌ها
+        <span class="num" id="m-count">۰</span>
+      </div>
+
+      <div class="toolbar">
+        <input id="m-search" class="search" type="text" placeholder="جستجو در گزارش‌ها…">
+        <select id="m-sort" class="sort">
+          <option value="new">جدیدترین</option>
+          <option value="old">قدیمی‌ترین</option>
+        </select>
+        <button class="btn ghost mini" id="m-export">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <path d="M7 10l5 5 5-5M12 15V3"/>
+          </svg>
+          خروجی همه
+        </button>
+      </div>
+
+      <div id="m-list" class="issues"></div>
+
+      <div id="m-empty" class="empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <path d="M14 2v6h6"/>
+          <path d="M9 13h6M9 17h4"/>
+        </svg>
+        <div class="et">گزارشی برای نمایش وجود ندارد</div>
+        <div class="es">اطلاعات اتصال را وارد کن و روی «بارگذاری گزارش‌ها» بزن.</div>
+      </div>
+    </div>
+
+  </section>
+
+</div>
+
+<div id="toast">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+  <span id="toast-msg">پیام</span>
+</div>
+
+<script>
+(() => {
+'use strict';
+
+/* ============================================================
+ *  Utilities
+ * ============================================================ */
+const $  = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({
+  '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+}[c]));
+
+const toFa = (n) => Number(n || 0).toLocaleString('fa-IR');
+
+let toastTimer = null;
+const toast = (msg, type='info') => {
+  const el = $('#toast');
+  const m = $('#toast-msg');
+  m.textContent = msg;
+  el.className = 'show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.className = ''; }, 2600);
+};
+
+const copy = async (text) => {
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch (e) {}
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    return ok;
+  } catch (e) { return false; }
+};
+
+const download = (filename, text) => {
+  const blob = new Blob([text], { type: 'application/json;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+};
+
+const STORE_KEY = 'phish-monitor-v1';
+
+/* ============================================================
+ *  Tab switching
+ * ============================================================ */
+$$('nav.tabs button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const t = btn.dataset.tab;
+    $$('nav.tabs button').forEach(b => b.classList.toggle('active', b === btn));
+    $$('section.tab').forEach(s => s.classList.toggle('active', s.id === 'tab-' + t));
+  });
+});
+
+/* ============================================================
+ *  BUILD
+ * ============================================================ */
+const buildInputs = {
+  base:  $('#f-base'),
+  token: $('#f-token'),
+  owner: $('#f-owner'),
+  repo:  $('#f-repo'),
+  user:  $('#f-user'),
+  format:$('#f-format'),
+  save:  $('#f-save')
+};
+
+let builtLink = '';
+
+const buildUrl = () => {
+  const base  = (buildInputs.base.value  || '').trim();
+  const token = (buildInputs.token.value || '').trim();
+  const owner = (buildInputs.owner.value || '').trim();
+  const repo  = (buildInputs.repo.value  || '').trim();
+  const user  = (buildInputs.user.value  || '').trim();
+  const format= buildInputs.format.value;
+
+  if (!base || !token || !owner || !repo) {
+    return { error: 'آدرس صفحه، کلید، مالک و نام مخزن الزامی هستند.' };
+  }
+  if (!/^github_pat_|^ghp_/.test(token)) {
+    return { error: 'کلید معتبر به نظر نمی‌رسد (باید با github_pat_ یا ghp_ شروع شود).' };
+  }
+  if (!/^https?:\/\//i.test(base)) {
+    return { error: 'آدرس صفحه باید با https:// یا http:// شروع شود.' };
+  }
+
+  const enc = encodeURIComponent;
+  let url;
+
+  if (format === 'raw') {
+    const parts = [
+      '0xTk_'   + enc(token),
+      '0xOn_'   + enc(owner),
+      '0xRp_'   + enc(repo)
+    ];
+    if (user) parts.push('UseriD_' + enc(user));
+    const sep = base.includes('?') ? '&' : '?';
+    url = base + sep + parts.join('&');
+  } else {
+    const params = new URLSearchParams();
+    params.set('0xTk', token);
+    params.set('0xOn', owner);
+    params.set('0xRp', repo);
+    if (user) params.set('UseriD', user);
+    const sep = base.includes('?') ? '&' : '?';
+    url = base + sep + params.toString();
+  }
+
+  return { url, base, token, owner, repo, user, format };
+};
+
+const renderPreview = (res) => {
+  const box    = $('#pv-box');
+  const badges = $('#pv-badges');
+  const lenEl  = $('#pv-len');
+  const copyBtn= $('#pv-copy');
+  const openBtn= $('#pv-open');
+  const hint   = $('#pv-hint');
+
+  if (res.error) {
+    box.className = 'link-preview empty';
+    box.innerHTML = '<span>' + esc(res.error) + '</span>';
+    badges.innerHTML = '';
+    lenEl.textContent = '۰ کاراکتر';
+    copyBtn.disabled = true;
+    openBtn.disabled = true;
+    hint.textContent = 'خطا را برطرف کن و دوباره تلاش کن.';
+    builtLink = '';
+    return;
+  }
+
+  builtLink = res.url;
+  box.className = 'link-preview';
+  box.innerHTML = '<div class="txt">' + esc(res.url) + '</div>';
+  lenEl.textContent = toFa(res.url.length) + ' کاراکتر';
+
+  const b = [];
+  b.push(`<span class="bdg ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>آماده</span>`);
+  b.push(`<span class="bdg">فرمت: ${res.format === 'raw' ? 'کوتاه' : 'استاندارد'}</span>`);
+  b.push(`<span class="bdg">مخزن: ${esc(res.owner + '/' + res.repo)}</span>`);
+  if (res.user) b.push(`<span class="bdg">کاربر: ${esc(res.user)}</span>`);
+  badges.innerHTML = b.join('');
+
+  copyBtn.disabled = false;
+  openBtn.disabled = false;
+  hint.textContent = 'لینک آماده است.';
+};
+
+$('#f-build').addEventListener('click', () => {
+  const res = buildUrl();
+  renderPreview(res);
+  if (res.error) toast(res.error, 'err');
+  else { toast('لینک ساخته شد', 'ok'); persistBuild(); }
+});
+
+$('#pv-copy').addEventListener('click', async () => {
+  if (!builtLink) return;
+  const ok = await copy(builtLink);
+  toast(ok ? 'لینک کپی شد' : 'کپی ناموفق بود', ok ? 'ok' : 'err');
+});
+
+$('#pv-open').addEventListener('click', () => {
+  if (!builtLink) return;
+  window.open(builtLink, '_blank', 'noopener');
+});
+
+$('#f-clear').addEventListener('click', () => {
+  Object.values(buildInputs).forEach(el => {
+    if (el.type === 'checkbox') el.checked = false;
+    else if (el.tagName === 'SELECT') el.selectedIndex = 0;
+    else el.value = '';
+  });
+  renderPreview({ error: 'هنوز لینکی ساخته نشده' });
+  localStorage.removeItem(STORE_KEY);
+  toast('پاک شد', 'info');
+});
+
+const persistBuild = () => {
+  if (!buildInputs.save.checked) { localStorage.removeItem(STORE_KEY); return; }
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify({
+      base:  buildInputs.base.value,
+      token: buildInputs.token.value,
+      owner: buildInputs.owner.value,
+      repo:  buildInputs.repo.value,
+      user:  buildInputs.user.value,
+      format:buildInputs.format.value
+    }));
+  } catch (e) {}
+};
+
+const restoreBuild = () => {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return;
+    const d = JSON.parse(raw);
+    if (d.base)   buildInputs.base.value  = d.base;
+    if (d.token)  buildInputs.token.value = d.token;
+    if (d.owner)  buildInputs.owner.value = d.owner;
+    if (d.repo)   buildInputs.repo.value  = d.repo;
+    if (d.user)   buildInputs.user.value  = d.user;
+    if (d.format) buildInputs.format.value= d.format;
+    buildInputs.save.checked = true;
+    const res = buildUrl();
+    if (!res.error) renderPreview(res);
+  } catch (e) {}
+};
+
+Object.values(buildInputs).forEach(el => {
+  el.addEventListener('input',  () => { if (buildInputs.save.checked) persistBuild(); });
+  el.addEventListener('change', () => { if (buildInputs.save.checked) persistBuild(); });
+});
+
+renderPreview({ error: 'هنوز لینکی ساخته نشده' });
+restoreBuild();
+
+/* ============================================================
+ *  MONITOR
+ * ============================================================ */
+const mInputs = {
+  paste: $('#m-paste'),
+  token: $('#m-token'),
+  owner: $('#m-owner'),
+  repo:  $('#m-repo'),
+  auto:  $('#m-auto')
+};
+
+const getUrlParam = (base, search) => {
+  if (!base || !search) return null;
+  const s = search.replace(/^\?/, '');
+  if (!s) return null;
+  try {
+    const params = new URLSearchParams(s);
+    for (const n of [base, '_' + base]) {
+      const v = params.get(n);
+      if (v) return v;
+    }
+  } catch (e) {}
+  for (const n of [base, '_' + base]) {
+    const marker = n + '_';
+    let from = 0;
+    while (true) {
+      const idx = s.indexOf(marker, from);
+      if (idx === -1) break;
+      const before = idx === 0 ? '&' : s[idx - 1];
+      if (before === '&' || idx === 0) {
+        const rest = s.slice(idx + marker.length);
+        const amp = rest.indexOf('&');
+        const val = amp === -1 ? rest : rest.slice(0, amp);
+        try { return decodeURIComponent(val); } catch (e) { return val; }
+      }
+      from = idx + 1;
+    }
+  }
+  return null;
+};
+
+$('#m-parse').addEventListener('click', () => {
+  const raw = (mInputs.paste.value || '').trim();
+  if (!raw) return toast('لینکی وارد نشده', 'err');
+
+  let search = '';
+  try { search = new URL(raw, location.href).search; }
+  catch (e) { search = raw.includes('?') ? raw.slice(raw.indexOf('?')) : raw; }
+
+  const token = getUrlParam('0xTk', search);
+  const owner = getUrlParam('0xOn', search);
+  const repo  = getUrlParam('0xRp', search);
+  const user  = getUrlParam('UseriD', search);
+
+  if (token) mInputs.token.value = token;
+  if (owner) mInputs.owner.value = owner;
+  if (repo)  mInputs.repo.value  = repo;
+
+  const found = [token && 'کلید', owner && 'مالک', repo && 'مخزن', user && 'کاربر']
+    .filter(Boolean).join(' • ');
+
+  if (!found) toast('چیزی پیدا نشد', 'err');
+  else toast('استخراج شد: ' + found, 'ok');
+});
+
+/* ============================================================
+ *  IP Extraction — from body
+ * ============================================================ */
+const isValidIP = (s) => {
+  if (!s || typeof s !== 'string') return false;
+  const v4 = /^(\d{1,3}\.){3}\d{1,3}$/;
+  const v6 = /^[a-f0-9:]{2,}$/i;
+  if (v4.test(s)) return true;
+  if (v6.test(s) && s.includes(':')) return true;
+  return false;
+};
+
+const isIPv6 = (s) => typeof s === 'string' && s.includes(':');
+
+const extractAllIPs = (body) => {
+  const out = new Map();
+  const add = (ip, type) => {
+    if (!isValidIP(ip)) return;
+    const clean = String(ip).trim();
+    if (!clean) return;
+    if (!out.has(clean)) out.set(clean, { ip: clean, types: new Set() });
+    if (type) out.get(clean).types.add(type);
+  };
+
+  // From ips: block
+  const ipsMatch = body.match(/ips:\s*```json\s*([\s\S]*?)```/);
+  if (ipsMatch) {
+    try {
+      const ips = JSON.parse(ipsMatch[1].trim());
+      if (Array.isArray(ips)) ips.forEach(it => { if (it && it.ip) add(it.ip, it.type); });
+    } catch (e) {}
+  }
+
+  // From fp: block
+  const fpMatch = body.match(/fp:\s*```json\s*([\s\S]*?)```/);
+  if (fpMatch) {
+    try {
+      const fp = JSON.parse(fpMatch[1].trim());
+      if (fp.public_ipv4) add(fp.public_ipv4, 'public_ipv4');
+      if (fp.public_ipv6) add(fp.public_ipv6, 'public_ipv6');
+      if (fp.local_ip?.ipv4) add(fp.local_ip.ipv4, 'local_ipv4');
+      if (fp.local_ip?.ipv6) add(fp.local_ip.ipv6, 'local_ipv6');
+      if (fp.cloudflareTrace?.ip) add(fp.cloudflareTrace.ip, 'cloudflare_trace');
+    } catch (e) {}
+  }
+
+  return Array.from(out.values()).map(x => ({ ip: x.ip, types: Array.from(x.types) }));
+};
+
+/* ============================================================
+ *  IP Analysis — query multiple public APIs
+ * ============================================================ */
+const ANALYSIS_CACHE = new Map(); // ip → results
+
+const fetchWithTimeout = async (url, ms=5000) => {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), ms);
+  try {
+    const res = await fetch(url, {
+      signal: ctrl.signal,
+      cache: 'no-store',
+      mode: 'cors',
+      credentials: 'omit',
+      referrerPolicy: 'no-referrer'
+    });
+    clearTimeout(t);
+    if (!res.ok) return { ok:false, status: res.status };
+    try {
+      const data = await res.json();
+      return { ok:true, data };
+    } catch (e) { return { ok:false, error:'invalid-json' }; }
+  } catch (e) {
+    clearTimeout(t);
+    const isAbort = e && (e.name === 'AbortError');
+    return { ok:false, error: isAbort ? 'timeout' : ((e && e.message) || 'network-error') };
+  }
+};
+
+/* Each provider: { name, url(ip), parse(json) → object|null } */
+const IP_PROVIDERS = [
+  {
+    name: 'ipwho.is',
+    url: ip => `https://ipwho.is/${ip}`,
+    parse: j => {
+      if (!j || j.success === false) return null;
+      return {
+        type: j.type || null,
+        country: j.country || null,
+        countryCode: j.country_code || null,
+        region: j.region || null,
+        city: j.city || null,
+        postal: j.postal || null,
+        lat: j.latitude ?? null,
+        lon: j.longitude ?? null,
+        timezone: j.timezone?.id || j.timezone || null,
+        isp: j.connection?.isp || null,
+        org: j.connection?.org || null,
+        asn: j.connection?.asn ? ('AS' + j.connection.asn) : null,
+        domain: j.connection?.domain || null
+      };
+    }
+  },
+  {
+    name: 'ipapi.co',
+    url: ip => `https://ipapi.co/${ip}/json/`,
+    parse: j => {
+      if (!j || j.error) return null;
+      return {
+        type: j.version || null,
+        country: j.country_name || null,
+        countryCode: j.country_code || null,
+        region: j.region || null,
+        city: j.city || null,
+        postal: j.postal || null,
+        lat: j.latitude ?? null,
+        lon: j.longitude ?? null,
+        timezone: j.timezone || null,
+        isp: j.org || null,
+        org: j.org || null,
+        asn: j.asn || null,
+        domain: null
+      };
+    }
+  },
+  {
+    name: 'ipinfo.io',
+    url: ip => `https://ipinfo.io/${ip}/json`,
+    parse: j => {
+      if (!j || !j.ip) return null;
+      const loc = j.loc ? String(j.loc).split(',') : [];
+      return {
+        type: null,
+        country: j.country || null,
+        countryCode: j.country || null,
+        region: j.region || null,
+        city: j.city || null,
+        postal: j.postal || null,
+        lat: loc[0] || null,
+        lon: loc[1] || null,
+        timezone: j.timezone || null,
+        isp: j.org || null,
+        org: j.org || null,
+        asn: j.asn?.asn || null,
+        domain: null
+      };
+    }
+  },
+  {
+    name: 'geolocation-db',
+    url: ip => `https://geolocation-db.com/json/${ip}`,
+    parse: j => {
+      if (!j || (!j.IPv4 && !j.IPv6)) return null;
+      return {
+        type: j.IPv6 ? 'IPv6' : 'IPv4',
+        country: j.country_name || null,
+        countryCode: j.country_code || null,
+        region: j.state || null,
+        city: j.city || null,
+        postal: j.postal || null,
+        lat: j.latitude ?? null,
+        lon: j.longitude ?? null,
+        timezone: null,
+        isp: null,
+        org: null,
+        asn: null,
+        domain: null
+      };
+    }
+  },
+  {
+    name: 'ip.guide',
+    url: ip => `https://ip.guide/${ip}`,
+    parse: j => {
+      if (!j || !j.network) return null;
+      return {
+        type: null,
+        country: null, countryCode: null, region: null, city: null, postal: null,
+        lat: null, lon: null, timezone: null,
+        isp: j.network?.autonomous_system?.organization || null,
+        org: j.network?.autonomous_system?.organization || null,
+        asn: j.network?.autonomous_system?.asn ? ('AS' + j.network.autonomous_system.asn) : null,
+        cidr: j.network?.cidr || null,
+        routes: j.network?.routes ? j.network.routes.slice(0,6) : null
+      };
+    }
+  },
+  {
+    name: 'rdap.org',
+    url: ip => `https://rdap.org/ip/${ip}`,
+    parse: j => {
+      if (!j) return null;
+      return {
+        handle: j.handle || null,
+        name: j.name || null,
+        country: j.country || null,
+        startAddress: j.startAddress || null,
+        endAddress: j.endAddress || null,
+        type: j.type || null,
+        parentHandle: j.parentHandle || null
+      };
+    }
+  },
+  {
+    name: 'reverseDNS',
+    url: ip => {
+      if (isIPv6(ip)) return null; // simple reverse only for IPv4
+      const p = String(ip).split('.');
+      if (p.length !== 4) return null;
+      return `https://dns.google/resolve?name=${p[3]}.${p[2]}.${p[1]}.${p[0]}.in-addr.arpa&type=PTR`;
+    },
+    parse: j => {
+      if (!j || !j.Answer || !j.Answer.length) return null;
+      return { ptr: j.Answer.map(a => a.data).join(', ') };
+    }
+  }
+];
+
+/* Returns per-provider result. Uses cache per IP. */
+const analyzeIP = async (ip) => {
+  if (ANALYSIS_CACHE.has(ip)) return ANALYSIS_CACHE.get(ip);
+
+  const tasks = IP_PROVIDERS.map(async (p) => {
+    let url = null;
+    try { url = p.url(ip); } catch (e) { url = null; }
+    if (!url) return { name: p.name, ok:false, error:'not-supported' };
+
+    const res = await fetchWithTimeout(url, 5000);
+    if (!res.ok) {
+      return {
+        name: p.name,
+        ok: false,
+        error: res.error || ('HTTP ' + (res.status || '?'))
+      };
+    }
+    let parsed = null;
+    try { parsed = p.parse(res.data); }
+    catch (e) { parsed = null; }
+
+    if (!parsed) return { name: p.name, ok:false, error:'no-data' };
+    return { name: p.name, ok:true, data: parsed };
+  });
+
+  const results = await Promise.all(tasks);
+  ANALYSIS_CACHE.set(ip, results);
+  return results;
+};
+
+/* ============================================================
+ *  IP Analysis UI
+ * ============================================================ */
+const FIELD_LABELS = {
+  type: 'type', country: 'country', countryCode: 'cc',
+  region: 'region', city: 'city', postal: 'postal',
+  lat: 'lat', lon: 'lon', timezone: 'timezone',
+  isp: 'isp', org: 'org', asn: 'asn', domain: 'domain',
+  cidr: 'cidr', routes: 'routes',
+  handle: 'handle', name: 'name',
+  startAddress: 'start', endAddress: 'end',
+  parentHandle: 'parent',
+  ptr: 'ptr'
+};
+
+const renderApiCard = (name, state) => {
+  const card = document.createElement('div');
+  card.className = 'api-card ' + (state === 'loading' ? 'loading' : '');
+
+  const nameHtml = `<div class="api-name"><span>${esc(name)}</span><span class="st" data-st>…</span></div>`;
+
+  if (state === 'loading') {
+    card.innerHTML = nameHtml + `<div class="api-load"><span class="spin sp"></span> در حال دریافت…</div>`;
+  } else {
+    card.innerHTML = nameHtml;
+  }
+  return card;
+};
+
+const fillApiCard = (card, res) => {
+  const stEl = card.querySelector('[data-st]');
+  card.classList.remove('loading');
+
+  if (res.ok && res.data) {
+    card.classList.add('ok');
+    if (stEl) { stEl.textContent = 'OK'; stEl.className = 'st ok'; }
+
+    const rows = [];
+    for (const [k, v] of Object.entries(res.data)) {
+      if (v === null || v === undefined || v === '') continue;
+      const label = FIELD_LABELS[k] || k;
+      let display;
+      if (Array.isArray(v)) display = v.join(', ');
+      else display = String(v);
+      rows.push(`<div class="api-row"><span class="k">${esc(label)}</span><span class="v">${esc(display)}</span></div>`);
+    }
+    if (!rows.length) {
+      card.insertAdjacentHTML('beforeend', `<div class="api-err" style="color:var(--ink3)">داده‌ای برنگشت</div>`);
+    } else {
+      card.insertAdjacentHTML('beforeend', `<div class="api-rows">${rows.join('')}</div>`);
+    }
+    return;
+  }
+
+  // error state
+  card.classList.add('err');
+  if (stEl) { stEl.textContent = 'ERR'; stEl.className = 'st err'; }
+  const msg = res.error || 'no-data';
+  card.insertAdjacentHTML('beforeend', `<div class="api-err">${esc(msg)}</div>`);
+};
+
+const renderIPBlock = (ipInfo) => {
+  const block = document.createElement('div');
+  block.className = 'ip-block';
+  block.dataset.ip = ipInfo.ip;
+
+  const isV6 = isIPv6(ipInfo.ip);
+  const isPublic = ipInfo.types.some(t => /public|cloudflare/.test(t));
+
+  const badges = ipInfo.types.map(t => {
+    const cls = /public|cloudflare/.test(t) ? 'pub' : 'loc';
+    return `<span class="badge ${cls}">${esc(t)}</span>`;
+  }).join('');
+  const v6badge = isV6 ? `<span class="badge v6">IPv6</span>` : `<span class="badge">IPv4</span>`;
+
+  block.innerHTML = `
+    <div class="ip-header">
+      <div class="ipv ${isV6 ? 'ipv6' : 'ipv4'}">${esc(ipInfo.ip)}</div>
+      <div class="badges">${v6badge}${badges}</div>
+    </div>
+    <div class="api-grid" data-grid></div>
+  `;
+
+  const grid = block.querySelector('[data-grid]');
+  const cards = {};
+
+  IP_PROVIDERS.forEach(p => {
+    const c = renderApiCard(p.name, 'loading');
+    cards[p.name] = c;
+    grid.appendChild(c);
+  });
+
+  return { block, cards };
+};
+
+const runAnalysis = async (container, ipList) => {
+  container.innerHTML = '';
+
+  for (const ipInfo of ipList) {
+    const { block, cards } = renderIPBlock(ipInfo);
+    container.appendChild(block);
+
+    // kick off queries
+    analyzeIP(ipInfo.ip).then(results => {
+      results.forEach(res => {
+        const card = cards[res.name];
+        if (card) fillApiCard(card, res);
+      });
+    }).catch(() => {
+      Object.values(cards).forEach(card => {
+        fillApiCard(card, { ok:false, error:'analysis-failed' });
+      });
+    });
+  }
+};
+
+/* ============================================================
+ *  Parse issue
+ * ============================================================ */
+const parseIssue = (issue) => {
+  const title = issue.title || '';
+  const body  = issue.body  || '';
+  const tMatch = title.match(/V?(\d+)\s+([0-9\-: ]+)(?:\s+\[([^\]]+)\])?/);
+  const visitorId = tMatch ? tMatch[1] : null;
+  const userId    = tMatch && tMatch[3] ? tMatch[3] : null;
+
+  const ips = extractAllIPs(body);
+
+  let mainIp = null, loc = null;
+  if (ips.length) {
+    const pub4 = ips.find(x => x.types.includes('public_ipv4'));
+    const pub6 = ips.find(x => x.types.includes('public_ipv6'));
+    const main = pub4 || pub6 || ips[0];
+    if (main) mainIp = main.ip;
+  }
+
+  return {
+    number: issue.number,
+    createdAt: issue.created_at,
+    title, body,
+    visitorId, userId, mainIp, loc,
+    ips
+  };
+};
+
+/* ============================================================
+ *  Render
+ * ============================================================ */
+const renderEmpty = (show) => { $('#m-empty').style.display = show ? 'block' : 'none'; };
+
+const renderStats = (list) => {
+  $('#m-stats-card').style.display = list.length ? 'block' : 'none';
+  const todayKey = new Date().toISOString().slice(0,10);
+  const todayCount = list.filter(i => (i.createdAt || '').slice(0,10) === todayKey).length;
+  const ipCount  = list.filter(i => i.mainIp).length;
+  const locCount = list.filter(i => i.loc).length;
+
+  $('#st-total').textContent = toFa(list.length);
+  $('#st-today').textContent = toFa(todayCount);
+  $('#st-ip').textContent    = toFa(ipCount);
+  $('#st-loc').textContent   = toFa(locCount);
+};
+
+const fmtDate = (iso) => {
+  try {
+    const d = new Date(iso);
+    const opts = { timeZone: 'Asia/Tehran',
+      year:'numeric', month:'2-digit', day:'2-digit',
+      hour:'2-digit', minute:'2-digit', hour12:false };
+    const parts = new Intl.DateTimeFormat('en-GB', opts).formatToParts(d);
+    const g = (t) => parts.find(p => p.type === t)?.value || '';
+    return `${g('year')}-${g('month')}-${g('day')} ${g('hour')}:${g('minute')}`;
+  } catch (e) { return iso || ''; }
+};
+
+const renderIssueCard = (item, rawIssue) => {
+  const tags = [];
+  if (item.visitorId) tags.push(`<span class="tag">#${esc(item.visitorId)}</span>`);
+  if (item.userId)    tags.push(`<span class="tag user">${esc(item.userId)}</span>`);
+  if (item.mainIp)    tags.push(`<span class="tag ip">${esc(item.mainIp)}</span>`);
+  if (item.ips.length > 1) tags.push(`<span class="tag tm">${toFa(item.ips.length)} IP</span>`);
+
+  const created = fmtDate(item.createdAt);
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'issue';
+  wrapper.dataset.number = String(item.number);
+
+  wrapper.innerHTML = `
+    <div class="issue-head">
+      <div class="issue-title"><span class="num-badge">#${esc(item.number)}</span></div>
+      <div class="issue-meta">${esc(created)}</div>
+      <div class="issue-actions">
+        <button class="act-btn warn" data-act="analyze" title="تحلیل IP">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="7"/>
+            <path d="M21 21l-4.3-4.3"/>
+            <path d="M11 8v3l2 1.5"/>
+          </svg>
+        </button>
+        <button class="act-btn ok" data-act="copy" title="کپی JSON">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2"/>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+          </svg>
+        </button>
+        <button class="act-btn info" data-act="export" title="دانلود JSON">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <path d="M7 10l5 5 5-5M12 15V3"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="issue-tags">${tags.join('') || '<span class="tag tm">بدون برچسب</span>'}</div>
+    <div class="issue-body">
+      <div class="label">RAW REPORT</div>
+      <pre class="code">${esc(item.body || '(بدون متن)')}</pre>
+      <div class="ip-analysis" data-analysis></div>
+    </div>
+  `;
+
+  const head = wrapper.querySelector('.issue-head');
+  head.addEventListener('click', (e) => {
+    if (e.target.closest('.act-btn')) return;
+    wrapper.classList.toggle('open');
+  });
+
+  const analysisEl = wrapper.querySelector('[data-analysis]');
+
+  wrapper.querySelectorAll('.act-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const act = btn.dataset.act;
+
+      if (act === 'copy') {
+        const ok = await copy(JSON.stringify(rawIssue, null, 2));
+        toast(ok ? 'JSON کپی شد' : 'کپی ناموفق', ok ? 'ok' : 'err');
+      } else if (act === 'export') {
+        download(`report-${item.number}.json`, JSON.stringify(rawIssue, null, 2));
+        toast('دانلود شد', 'ok');
+      } else if (act === 'analyze') {
+        // toggle open + analysis
+        if (!wrapper.classList.contains('open')) wrapper.classList.add('open');
+
+        if (analysisEl.classList.contains('show')) {
+          // already shown — hide
+          analysisEl.classList.remove('show');
+          toast('تحلیل بسته شد', 'info');
+          return;
+        }
+        analysisEl.classList.add('show');
+
+        if (!item.ips.length) {
+          analysisEl.innerHTML = `<div class="muted" style="padding:8px 4px">هیچ IP معتبری در این گزارش پیدا نشد.</div>`;
+          return;
+        }
+
+        analysisEl.innerHTML = `<div class="muted" style="padding:8px 4px;display:flex;align-items:center;gap:8px"><span class="spin"></span> در حال تحلیل ${toFa(item.ips.length)} آی‌پی از ${toFa(IP_PROVIDERS.length)} منبع…</div>`;
+        toast('شروع تحلیل IP…', 'info');
+        await runAnalysis(analysisEl, item.ips);
+        toast('تحلیل کامل شد', 'ok');
+      }
+    });
+  });
+
+  return wrapper;
+};
+
+/* ============================================================
+ *  GitHub API
+ * ============================================================ */
+let monitorState = {
+  list: [],
+  raw: [],
+  loading: false,
+  autoTimer: null
+};
+
+const setStatus = (text, cls='') => {
+  const el = $('#m-status');
+  const dotCls = cls ? 'dot ' + cls : 'dot';
+  el.innerHTML = `<span class="${dotCls}"></span>${esc(text)}`;
+};
+
+const loadIssues = async () => {
+  const token = (mInputs.token.value || '').trim();
+  const owner = (mInputs.owner.value || '').trim();
+  const repo  = (mInputs.repo.value  || '').trim();
+
+  if (!token || !owner || !repo) { toast('کلید، مالک و مخزن لازم است', 'err'); return; }
+  if (monitorState.loading) return;
+  monitorState.loading = true;
+
+  const btn = $('#m-load');
+  const oldHTML = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span> در حال بارگذاری…';
+  setStatus('در حال اتصال…');
+
+  try {
+    const ctrl = new AbortController();
+    const tm = setTimeout(() => ctrl.abort(), 15000);
+
+    const url = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/issues?state=all&per_page=100&sort=created&direction=desc`;
+    const res = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28'
+      },
+      signal: ctrl.signal,
+      cache: 'no-store'
+    });
+    clearTimeout(tm);
+
+    if (!res.ok) {
+      let detail = '';
+      try { const j = await res.json(); detail = (j && (j.message || j.error)) || ''; } catch (e) {}
+      const msg = `HTTP ${res.status}${res.statusText ? ' ' + res.statusText : ''}${detail ? ' — ' + detail : ''}`;
+      setStatus('خطا: ' + msg, 'err');
+      toast(msg, 'err');
+      return;
+    }
+
+    const data = await res.json();
+    const arr = Array.isArray(data) ? data : [];
+    monitorState.raw = arr;
+    monitorState.list = arr.map(parseIssue);
+
+    setStatus('آخرین به‌روزرسانی: ' + fmtDate(new Date().toISOString()), 'ok');
+    renderMonitor();
+    toast(`بارگذاری شد (${arr.length} گزارش)`, 'ok');
+  } catch (e) {
+    const msg = e.name === 'AbortError' ? 'تایم‌اوت' : (e.message || String(e));
+    setStatus('خطا: ' + msg, 'err');
+    toast('خطا: ' + msg, 'err');
+  } finally {
+    monitorState.loading = false;
+    btn.disabled = false;
+    btn.innerHTML = oldHTML;
+  }
+};
+
+const renderMonitor = () => {
+  const listEl = $('#m-list');
+  const q      = ($('#m-search').value || '').trim().toLowerCase();
+  const sort   = $('#m-sort').value;
+
+  const rawByNumber = new Map();
+  monitorState.raw.forEach(r => rawByNumber.set(r.number, r));
+
+  let items = monitorState.list.slice();
+
+  if (q) {
+    items = items.filter(i => {
+      const hay = [
+        i.title, i.visitorId, i.userId, i.body, i.mainIp, i.loc,
+        ...(i.ips || []).map(x => x.ip)
+      ].filter(Boolean).join(' ').toLowerCase();
+      return hay.includes(q);
+    });
+  }
+
+  items.sort((a, b) => {
+    const da = new Date(a.createdAt).getTime();
+    const db = new Date(b.createdAt).getTime();
+    return sort === 'old' ? da - db : db - da;
+  });
+
+  listEl.innerHTML = '';
+  if (!items.length) {
+    renderEmpty(true);
+    $('#m-count').textContent = '۰';
+    renderStats(monitorState.list);
+    return;
+  }
+  renderEmpty(false);
+  $('#m-count').textContent = toFa(items.length);
+  renderStats(monitorState.list);
+
+  const frag = document.createDocumentFragment();
+  items.forEach(it => {
+    const raw = rawByNumber.get(it.number);
+    if (raw) frag.appendChild(renderIssueCard(it, raw));
+  });
+  listEl.appendChild(frag);
+};
+
+$('#m-load').addEventListener('click', loadIssues);
+$('#m-search').addEventListener('input', renderMonitor);
+$('#m-sort').addEventListener('change', renderMonitor);
+
+$('#m-export').addEventListener('click', () => {
+  if (!monitorState.raw.length) return toast('گزارشی برای خروجی نیست', 'err');
+  download(`phish-reports-${Date.now()}.json`, JSON.stringify(monitorState.raw, null, 2));
+  toast('خروجی دانلود شد', 'ok');
+});
+
+mInputs.auto.addEventListener('change', () => {
+  if (monitorState.autoTimer) {
+    clearInterval(monitorState.autoTimer);
+    monitorState.autoTimer = null;
+  }
+  if (mInputs.auto.checked) {
+    monitorState.autoTimer = setInterval(loadIssues, 15000);
+    toast('به‌روزرسانی خودکار فعال شد', 'info');
+  } else {
+    toast('به‌روزرسانی خودکار غیرفعال شد', 'info');
+  }
+});
+
+['m-token', 'm-owner', 'm-repo'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener('paste', () => setTimeout(() => {
+    const v = el.value || '';
+    if (v.includes('0xTk') || v.includes('?0x')) {
+      $('#m-paste').value = v;
+      $('#m-parse').click();
+    }
+  }, 20));
+});
+
+document.addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+    if ($('#tab-monitor').classList.contains('active')) {
+      e.preventDefault();
+      $('#m-search').focus();
+    }
+  }
+});
+
+})();
+</script>
+</body>
+</html>

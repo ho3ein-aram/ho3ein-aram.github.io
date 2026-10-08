@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Matrix Terminal</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
+body{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+.matrix-canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
+.matrix-overlay{position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at center,transparent 0 36%,rgba(0,255,102,.035) 72%,rgba(0,0,0,.58))}
+.matrix-back{
+ position:fixed;top:16px;right:16px;z-index:3;width:46px;height:46px;border:1px solid rgba(0,255,102,.38);
+ border-radius:50%;background:rgba(0,18,7,.76);color:#00ff66;font-size:29px;display:grid;place-items:center;cursor:pointer;
+ box-shadow:0 0 20px rgba(0,255,102,.14);backdrop-filter:blur(8px)
+}
+.matrix-label{position:fixed;left:18px;bottom:15px;color:#00ff66;opacity:.55;font:600 10px monospace;letter-spacing:2px}
+</style></head>
+<body>
+<canvas class="matrix-canvas" id="matrix"></canvas>
+<div class="matrix-overlay"></div>
+<button class="matrix-back" onclick="history.back()" aria-label="Back">‹</button>
+<div class="matrix-label">MATRIX // 0101</div>
+<script>
+const canvas=document.getElementById('matrix'),ctx=canvas.getContext('2d');
+const chars='01';
+let font=15,drops=[];
+function resize(){
+ const dpr=devicePixelRatio||1;
+ canvas.width=innerWidth*dpr;canvas.height=innerHeight*dpr;
+ canvas.style.width=innerWidth+'px';canvas.style.height=innerHeight+'px';
+ ctx.setTransform(dpr,0,0,dpr,0,0);
+ drops=Array.from({length:Math.ceil(innerWidth/font)},()=>Math.random()*-80);
+}
+function draw(){
+ ctx.fillStyle='rgba(0,0,0,.09)';ctx.fillRect(0,0,innerWidth,innerHeight);
+ ctx.font=font+'px monospace';
+ for(let i=0;i<drops.length;i++){
+   const c=chars[(Math.random()*2)|0];
+   ctx.fillStyle=Math.random()>.9?'#baffd1':'#00ff66';
+   ctx.fillText(c,i*font,drops[i]*font);
+   if(drops[i]*font>innerHeight && Math.random()>.975)drops[i]=0;
+   drops[i]+=.72;
+ }
+ requestAnimationFrame(draw);
+}
+addEventListener('resize',resize);resize();draw();
+</script>
+</body></html>

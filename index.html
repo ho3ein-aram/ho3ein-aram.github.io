@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="fa" dir="rtl" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#08090b">
+<title>Hossein — Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script>
+try{
+  const s=JSON.parse(localStorage.getItem('hossein_site_settings')||'null');
+  document.documentElement.dataset.theme=(s&&s.theme)||'dark';
+}catch(e){document.documentElement.dataset.theme='dark'}
+</script>
+</head>
+<body>
+<div class="ambient a1"></div><div class="ambient a2"></div>
+
+<div class="top-actions">
+  <button class="menu-top" aria-label="menu" onclick="openMenu()"><span class="hamburger" aria-hidden="true"><i></i><i></i><i></i></span></button>
+  <button class="theme-toggle" id="themeToggle" onclick="toggleHeaderTheme()" aria-label="Toggle theme"><span id="themeIcon">☾</span></button>
+</div>
+
+<main id="app" class="app"></main>
+
+<nav class="bottom-nav" aria-label="Navigation">
+  <button data-page="profile" class="nav-item active"><span class="nav-icon">♙</span><span class="nav-label">پروفایل</span></button>
+  <button data-page="posts" class="nav-item"><span class="nav-icon">▤</span><span class="nav-label">پست‌ها</span></button>
+  <button data-page="cyberpath" class="nav-item">
+    <span class="nav-icon nav-icon-svg" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.2 19 6v5.2c0 4.5-2.9 7.9-7 9.6-4.1-1.7-7-5.1-7-9.6V6l7-2.8Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="m9.1 12 1.8 1.8 4.2-4.3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    <span class="nav-label">مبانی</span>
+  </button>
+  <button data-page="ai" class="nav-item"><span class="nav-icon">✦</span><span class="nav-label">هوش مصنوعی</span></button>
+</nav>
+
+<div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
+<aside class="side-menu" id="sideMenu" aria-hidden="true">
+  <div class="side-menu-head">
+    <div class="menu-profile">
+      <div class="menu-avatar"><img src="profile.jpg" alt="Hossein profile"></div>
+      <div><strong id="menuTitle">منو</strong><small id="menuSub">تنظیمات</small></div>
+    </div>
+    <button class="menu-close" onclick="closeMenu()" aria-label="close">×</button>
+  </div>
+
+  <div class="side-menu-content">
+<button class="menu-setting menu-action" onclick="toggleNotificationsFromMenu()">
+      <div class="menu-leading-icon">♧</div>
+      <div class="menu-setting-text"><b id="menuNotifications">اعلان‌ها</b><small id="menuNotificationsSub">اعلان‌های مرورگر</small></div>
+      <span class="menu-switch" id="menuNotificationsSwitch"></span>
+    </button>
+
+    <div class="menu-setting language-setting">
+      <div class="menu-leading-icon">◎</div>
+      <div class="menu-setting-text"><b id="menuLanguage">زبان</b><small id="menuLanguageSub">زبان رابط کاربری</small></div>
+      <div class="menu-language-options">
+        <button onclick="setLanguageFromMenu('fa')" id="menuPersian">🇮🇷 فارسی</button>
+        <button onclick="setLanguageFromMenu('en')" id="menuEnglish">🇬🇧 English</button>
+      </div>
+    </div>
+
+    <button class="menu-link-item" onclick="location.href='matrix.html'">
+      <span class="menu-link-icon">01</span>
+      <span><b id="menuMatrix">ترمینال ماتریکس</b><small id="menuMatrixSub">ترمینال عددی</small></span>
+      <span class="menu-arrow">‹</span>
+    </button>
+
+    <button class="menu-link-item" onclick="location.href='downloads.html'">
+      <span class="menu-link-icon">↓</span>
+      <span><b id="menuDownloads">دانلود اپ</b><small id="menuDownloadsSub">ابزارها و برنامه‌ها</small></span>
+      <span class="menu-arrow">‹</span>
+    </button>
+
+    <button class="menu-link-item" onclick="location.href='ip-scanner.html'">
+      <span class="menu-link-icon">⌁</span>
+      <span><b id="menuScanner">ایپی اسکنر</b></span>
+      <span class="menu-arrow">‹</span>
+    </button>
+
+    <button class="menu-link-item" onclick="location.href='fishing-monitor.html'">
+      <span class="menu-link-icon">◉</span>
+      <span><b id="menuFishing">مانیتور فیشینگ</b><small id="menuFishingSub">Fishing Monitor</small></span>
+      <span class="menu-arrow">‹</span>
+    </button>
+
+    <button class="menu-link-item tool-under-fishing" onclick="location.href='ip-scanner-2.html'">
+      <span class="menu-link-icon tool-icon scanner2">⌁</span>
+      <span><b id="menuScanner2">ایپی اسکنر 2</b><small id="menuScanner2Sub">اسکنر اطلاعات IP</small></span>
+      <span class="menu-arrow">‹</span>
+    </button>
+
+    <button class="menu-link-item tool-under-fishing" onclick="location.href='shell-generator.html'">
+      <span class="menu-link-icon tool-icon shellgen">$</span>
+      <span><b id="menuShellGenerator">ساخت شل</b><small id="menuShellGeneratorSub">Shell Generator</small></span>
+      <span class="menu-arrow">‹</span>
+    </button>
+
+    <button class="menu-link-item tool-under-fishing" onclick="location.href='github-uploader.html'">
+      <span class="menu-link-icon tool-icon githubup">GH</span>
+      <span><b id="menuGithubUploader">گیتهاب آپلودر</b><small id="menuGithubUploaderSub">GitHub Folder Uploader</small></span>
+      <span class="menu-arrow">‹</span>
+    </button>
+
+    <div class="menu-version">
+      <span id="menuVersionLabel">نسخه سایت</span>
+      <strong>v1</strong>
+    </div>
+  </div>
+</aside>
+
+<div id="toast" class="toast"></div>
+<script src="app.js"></script>
+</body>
+</html>

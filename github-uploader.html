@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0b">
+<title>GitHub Folder Uploader</title>
+<style>
+:root{
+  --bg:#070708;
+  --panel:#0e0f11;
+  --panel2:#131417;
+  --line:#25272c;
+  --line2:#30333a;
+  --text:#f2f3f5;
+  --muted:#9da2ab;
+  --accent:#ff3b55;
+  --accent2:#ff6479;
+  --ok:#64e39a;
+  --warn:#ffcf66;
+  --bad:#ff6b76;
+  --shadow:0 22px 70px rgba(0,0,0,.42);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{padding:24px}
+button,input{font:inherit}
+button{cursor:pointer}
+.wrap{width:min(980px,100%);margin:0 auto}
+.top{margin-bottom:18px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:44px;height:44px;border:1px solid #41232a;border-radius:13px;display:grid;place-items:center;background:linear-gradient(145deg,#1b0d10,#0e0f11);box-shadow:inset 0 0 0 1px rgba(255,255,255,.03)}
+.logo svg{width:22px;height:22px}
+h1{font-size:22px;line-height:1.2;margin:0;font-weight:760;letter-spacing:-.02em}
+.sub{margin:6px 0 0;color:var(--muted);font-size:13px}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.008)),var(--panel);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}
+.section{padding:18px;border-bottom:1px solid var(--line)}
+.section:last-child{border-bottom:0}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.grid3{display:grid;grid-template-columns:1.25fr 1.25fr .8fr;gap:14px}
+.field{display:flex;flex-direction:column;gap:8px}
+label{font-size:12px;color:#b9bdc5}
+input[type=text],input[type=password]{width:100%;height:46px;padding:0 13px;border:1px solid var(--line2);border-radius:12px;background:#090a0c;color:var(--text);outline:0;transition:.18s}
+input[type=text]:focus,input[type=password]:focus{border-color:#6a303b;box-shadow:0 0 0 3px rgba(255,59,85,.08)}
+.token-row{display:grid;grid-template-columns:1fr auto;gap:9px}
+.smallbtn,.ghostbtn,.primary{height:46px;border-radius:12px;border:1px solid var(--line2);padding:0 15px;background:var(--panel2);color:var(--text);font-weight:700}
+.smallbtn:hover,.ghostbtn:hover{border-color:#4a4d55}
+.primary{background:linear-gradient(180deg,#ff4c63,#e92740);border-color:#ff6174;color:white;min-width:170px}
+.primary:hover{filter:brightness(1.06)}
+.primary:disabled,.ghostbtn:disabled,.smallbtn:disabled{cursor:not-allowed;opacity:.55}
+.hint{font-size:11px;color:var(--muted);line-height:1.7}
+.hint b{color:#e9ebef}
+.drop{border:1px dashed #42454d;border-radius:16px;background:#0a0b0d;padding:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:165px}
+.drop.drag{border-color:var(--accent);background:#150a0d}
+.folder-icon{width:45px;height:45px;margin-bottom:11px}
+.drop strong{font-size:15px}
+.drop span{margin-top:6px;color:var(--muted);font-size:12px}
+.pick-row{display:flex;flex-wrap:wrap;gap:9px;margin-top:13px;justify-content:center}
+.file-input{display:none}
+.file-list{margin-top:14px;max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:14px;background:#090a0c}
+.file-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.045)}
+.file-item:last-child{border-bottom:0}
+.file-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+.file-meta{color:#747a84;font-size:11px;white-space:nowrap}
+.icon-file{width:16px;height:16px;flex:none;color:#aeb3bc}
+.controls{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
+.left-controls,.right-controls{display:flex;align-items:center;flex-wrap:wrap;gap:9px}
+.status{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px}
+.dot{width:8px;height:8px;border-radius:50%;background:#555}
+.dot.ok{background:var(--ok);box-shadow:0 0 14px rgba(100,227,154,.35)}
+.dot.bad{background:var(--bad);box-shadow:0 0 14px rgba(255,107,118,.35)}
+.dot.busy{background:var(--warn);box-shadow:0 0 14px rgba(255,207,102,.25)}
+.progress-wrap{margin-top:14px}
+.progress-head{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;margin-bottom:7px}
+.bar{height:9px;background:#08090a;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.bar i{display:block;width:0;height:100%;background:linear-gradient(90deg,#ff314e,#ff7889);border-radius:999px;transition:width .18s}
+.log{margin-top:13px;border:1px solid var(--line);border-radius:14px;background:#08090a;padding:11px 12px;min-height:98px;max-height:220px;overflow:auto;font:12px/1.75 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;direction:ltr;text-align:left;white-space:pre-wrap;word-break:break-word}
+.log .ok{color:var(--ok)}
+.log .warn{color:var(--warn)}
+.log .bad{color:var(--bad)}
+.log .muted{color:#818792}
+.footer-note{padding:14px 18px;color:#7f858f;font-size:11px;line-height:1.8;background:#0b0c0e}
+.check{display:flex;align-items:center;gap:9px;color:#c4c8cf;font-size:12px}
+.check input{accent-color:var(--accent)}
+@media (max-width:740px){
+  body{padding:12px}
+  .grid,.grid3{grid-template-columns:1fr}
+  .section{padding:14px}
+  .card{border-radius:16px}
+  .controls{align-items:stretch}
+  .left-controls,.right-controls{width:100%}
+  .right-controls .primary{width:100%}
+  .drop{min-height:145px;padding:18px}
+}
+</style>
+
+<style id="site-back-style">.site-back{position:fixed;top:16px;right:16px;z-index:99999;width:44px;height:44px;border:1px solid rgba(255,255,255,.16);border-radius:50%;background:rgba(10,10,12,.92);color:#fff;display:grid;place-items:center;text-decoration:none;font:700 25px/1 Arial,sans-serif;box-shadow:0 12px 35px rgba(0,0,0,.45);backdrop-filter:blur(10px);transition:.2s}.site-back:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.35)}@media(max-width:600px){.site-back{top:12px;right:12px;width:42px;height:42px}}</style>
+</head>
+<body>
+<a class="site-back" href="index.html" aria-label="بازگشت" title="بازگشت">‹</a>
+<div class="wrap">
+  <div class="top">
+    <div class="brand">
+      <div class="logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M9 19c-4.2 1.2-4.2-2.1-5.9-2.7M15 22v-3.9c0-1.1.1-1.4-.5-2.1 3.4-.4 7-1.7 7-7.1 0-1.4-.5-2.6-1.3-3.5.1-.3.6-1.7-.1-3.5 0 0-1.1-.4-3.6 1.3a12.4 12.4 0 0 0-6.6 0C7.4 1.5 6.3 1.9 6.3 1.9c-.7 1.8-.2 3.2-.1 3.5-.8.9-1.3 2.1-1.3 3.5 0 5.4 3.6 6.7 7 7.1-.6.7-.6 1.2-.6 2.1V22"/>
+        </svg>
+      </div>
+      <div>
+        <h1>GitHub Folder Uploader</h1>
+        <div class="sub">آپلود مستقیم پوشه به Repository با یک Commit واقعی</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section">
+      <div class="grid">
+        <div class="field">
+          <label for="token">Fine-grained Personal Access Token</label>
+          <div class="token-row">
+            <input id="token" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_...">
+            <button class="smallbtn" id="showToken" type="button">نمایش</button>
+          </div>
+          <div class="hint">توکن فقط در همین صفحه در حافظه استفاده می‌شود و در localStorage ذخیره نمی‌شود.</div>
+        </div>
+        <div class="field">
+          <label for="repo">Repository</label>
+          <input id="repo" type="text" placeholder="owner/repository" spellcheck="false">
+          <div class="hint">مثال: <b>siteatlascode/siteatlascode.github.io</b></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="grid3">
+        <div class="field">
+          <label for="branch">Branch</label>
+          <input id="branch" type="text" value="main" spellcheck="false">
+        </div>
+        <div class="field">
+          <label for="targetPath">مسیر مقصد داخل Repository</label>
+          <input id="targetPath" type="text" placeholder="مثال: apps/munitos" spellcheck="false">
+        </div>
+        <div class="field">
+          <label for="commitMessage">Commit</label>
+          <input id="commitMessage" type="text" value="Upload folder" spellcheck="false">
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="field">
+        <label>پوشه یا فایل‌ها</label>
+        <div class="drop" id="drop">
+          <svg class="folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M3 6.7A1.7 1.7 0 0 1 4.7 5h5l1.7 2h8a1.6 1.6 0 0 1 1.6 1.6v8.7a1.7 1.7 0 0 1-1.7 1.7H4.7A1.7 1.7 0 0 1 3 17.3z"/>
+            <path d="M3 9h18"/>
+          </svg>
+          <strong id="pickTitle">پوشه را انتخاب کن</strong>
+          <span id="pickSub">ساختار زیرپوشه‌ها حفظ می‌شود.</span>
+          <div class="pick-row">
+            <button class="primary" id="pickFolder" type="button">انتخاب پوشه</button>
+            <button class="ghostbtn" id="pickFiles" type="button">انتخاب چند فایل</button>
+          </div>
+          <input class="file-input" id="folderInput" type="file" webkitdirectory directory multiple>
+          <input class="file-input" id="filesInput" type="file" multiple>
+        </div>
+        <div class="file-list" id="fileList" hidden></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <label class="check">
+        <input id="keepRoot" type="checkbox" checked>
+        نام پوشه انتخاب‌شده هم داخل مقصد ساخته شود
+      </label>
+      <div class="hint" style="margin-top:8px">مثلاً پوشه <b>MUNITOS</b> با مقصد <b>apps</b> به <b>apps/MUNITOS/...</b> تبدیل می‌شود. با خاموش‌کردن این گزینه، محتویات مستقیماً داخل مقصد می‌روند.</div>
+    </div>
+
+    <div class="section">
+      <div class="controls">
+        <div class="left-controls">
+          <div class="status"><i class="dot" id="dot"></i><span id="status">آماده</span></div>
+        </div>
+        <div class="right-controls">
+          <button class="ghostbtn" id="checkBtn" type="button">بررسی اتصال</button>
+          <button class="primary" id="uploadBtn" type="button" disabled>آپلود و Commit</button>
+        </div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-head"><span id="progressText">0 / 0</span><span id="progressPercent">0%</span></div>
+        <div class="bar"><i id="progressBar"></i></div>
+      </div>
+      <div class="log" id="log"><span class="muted">Ready.</span></div>
+    </div>
+
+    <div class="footer-note">
+      برای Fine-grained token فقط Repository موردنظر را انتخاب کن و permission بخش <b>Contents</b> را روی <b>Read and write</b> بگذار. این ابزار از Git database API برای ساخت blob، tree، commit و در پایان به‌روزرسانی branch استفاده می‌کند.
+    </div>
+  </div>
+</div>
+
+<script>
+const API="https://api.github.com";
+const API_VERSION="2026-03-10";
+const $=id=>document.getElementById(id);
+const tokenEl=$("token");
+const repoEl=$("repo");
+const branchEl=$("branch");
+const targetEl=$("targetPath");
+const messageEl=$("commitMessage");
+const keepRootEl=$("keepRoot");
+const folderInput=$("folderInput");
+const filesInput=$("filesInput");
+const fileList=$("fileList");
+const drop=$("drop");
+const uploadBtn=$("uploadBtn");
+const checkBtn=$("checkBtn");
+const logEl=$("log");
+const statusEl=$("status");
+const dotEl=$("dot");
+const progressBar=$("progressBar");
+const progressText=$("progressText");
+const progressPercent=$("progressPercent");
+let selectedFiles=[];
+
+function log(message,type="muted"){
+  const line=document.createElement("div");
+  line.className=type;
+  line.textContent=message;
+  logEl.appendChild(line);
+  logEl.scrollTop=logEl.scrollHeight;
+}
+function clearLog(){logEl.innerHTML=""}
+function setStatus(text,state=""){
+  statusEl.textContent=text;
+  dotEl.className="dot"+(state?" "+state:"");
+}
+function setProgress(done,total){
+  const percent=total?Math.round(done/total*100):0;
+  progressBar.style.width=percent+"%";
+  progressText.textContent=`${done} / ${total}`;
+  progressPercent.textContent=percent+"%";
+}
+function parseRepo(){
+  const raw=repoEl.value.trim().replace(/^https?:\/\/github\.com\//i,"").replace(/\.git$/i,"").replace(/\/+$/,"");
+  const parts=raw.split("/");
+  if(parts.length!==2||!parts[0]||!parts[1]) throw new Error("Repository باید به شکل owner/repository باشد.");
+  return {owner:parts[0],repo:parts[1]};
+}
+function getToken(){
+  const token=tokenEl.value.trim();
+  if(!token) throw new Error("توکن وارد نشده است.");
+  return token;
+}
+function getBranch(){
+  const branch=branchEl.value.trim();
+  if(!branch) throw new Error("Branch وارد نشده است.");
+  return branch;
+}
+function cleanPath(path){
+  return path.replaceAll("\\","/").replace(/^\/+/,"").split("/").filter(x=>x&&x!==".").join("/");
+}
+function humanSize(bytes){
+  const units=["B","KB","MB","GB"];
+  let n=bytes,i=0;
+  while(n>=1024&&i<units.length-1){n/=1024;i++;}
+  return `${n.toFixed(n>=100||i===0?0:n>=10?1:2)} ${units[i]}`;
+}
+function rootName(files){
+  const first=(files[0]?.webkitRelativePath||"").split("/")[0];
+  return first||"";
+}
+function fileRelativePath(file){
+  const p=file.webkitRelativePath||file.name;
+  const root=rootName(selectedFiles);
+  if(keepRootEl.checked) return cleanPath(p);
+  const parts=p.split("/");
+  if(root&&parts[0]===root) return cleanPath(parts.slice(1).join("/"));
+  return cleanPath(p);
+}
+function finalRepoPath(file){
+  const rel=fileRelativePath(file);
+  const target=cleanPath(targetEl.value);
+  return [target,rel].filter(Boolean).join("/");
+}
+function refreshList(){
+  fileList.innerHTML="";
+  if(!selectedFiles.length){fileList.hidden=true;updateReady();return}
+  const shown=selectedFiles.slice(0,120);
+  for(const file of shown){
+    const row=document.createElement("div");
+    row.className="file-item";
+    row.innerHTML=`<svg class="icon-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v5h5"/></svg><div class="file-name"></div><div class="file-meta"></div>`;
+    row.querySelector(".file-name").textContent=fileRelativePath(file);
+    row.querySelector(".file-meta").textContent=humanSize(file.size);
+    fileList.appendChild(row);
+  }
+  if(selectedFiles.length>120){
+    const more=document.createElement("div");
+    more.className="file-item";
+    more.textContent=`+ ${selectedFiles.length-120} فایل دیگر`;
+    more.style.color="#858a93";
+    fileList.appendChild(more);
+  }
+  fileList.hidden=false;
+  $("pickTitle").textContent=`${selectedFiles.length.toLocaleString("fa-IR")} فایل انتخاب شد`;
+  $("pickSub").textContent=`حجم کل: ${humanSize(selectedFiles.reduce((s,f)=>s+f.size,0))}`;
+  updateReady();
+}
+function updateReady(){
+  uploadBtn.disabled=!(selectedFiles.length&&tokenEl.value.trim()&&repoEl.value.trim()&&branchEl.value.trim());
+}
+async function api(path,options={}){
+  const token=getToken();
+  const headers={
+    "Accept":"application/vnd.github+json",
+    "Authorization":`Bearer ${token}`,
+    "X-GitHub-Api-Version":API_VERSION,
+    ...(options.headers||{})
+  };
+  const res=await fetch(API+path,{...options,headers});
+  const text=await res.text();
+  let data=null;
+  try{data=text?JSON.parse(text):null}catch{}
+  if(!res.ok){
+    const detail=data?.message||text||`HTTP ${res.status}`;
+    throw new Error(`${res.status}: ${detail}`);
+  }
+  return data;
+}
+function setBusy(busy){
+  uploadBtn.disabled=busy||!selectedFiles.length;
+  checkBtn.disabled=busy;
+  [...document.querySelectorAll("input,button")].forEach(el=>{
+    if(el!==uploadBtn&&el!==checkBtn) el.disabled=busy;
+  });
+  if(!busy){
+    $("showToken").disabled=false;
+    updateReady();
+  }
+}
+async function checkConnection(){
+  clearLog();
+  setBusy(true);
+  setStatus("در حال بررسی","busy");
+  try{
+    const {owner,repo}=parseRepo();
+    const branch=getBranch();
+    const info=await api(`/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`);
+    log(`✓ Repository: ${info.full_name}`,"ok");
+    log(`✓ Visibility: ${info.private?"private":"public"}`,"muted");
+    const ref=await api(`/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/git/ref/heads/${encodeURIComponent(branch)}`);
+    log(`✓ Branch: ${branch}`,"ok");
+    log(`✓ Current commit: ${ref.object.sha}`,"muted");
+    setStatus("اتصال موفق","ok");
+  }catch(err){
+    log(`✕ ${err.message}`,"bad");
+    setStatus("خطا","bad");
+  }finally{
+    setBusy(false);
+  }
+}
+async function fileToBase64(file){
+  const buffer=await file.arrayBuffer();
+  const bytes=new Uint8Array(buffer);
+  let binary="";
+  const chunk=0x8000;
+  for(let i=0;i<bytes.length;i+=chunk) binary+=String.fromCharCode(...bytes.subarray(i,i+chunk));
+  return btoa(binary);
+}
+async function upload(){
+  clearLog();
+  setProgress(0,selectedFiles.length);
+  setBusy(true);
+  setStatus("در حال آپلود","busy");
+  try{
+    const {owner,repo}=parseRepo();
+    const branch=getBranch();
+    const message=messageEl.value.trim()||"Upload folder";
+    const files=[...selectedFiles].sort((a,b)=>fileRelativePath(a).localeCompare(fileRelativePath(b)));
+    for(const file of files){
+      if(file.size>100*1024*1024) throw new Error(`فایل ${file.name} از سقف 100 MiB بیشتر است.`);
+      if(!fileRelativePath(file)) throw new Error(`مسیر فایل ${file.name} نامعتبر است.`);
+    }
+    const seen=new Set();
+    const entries=[];
+    const ref=await api(`/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/git/ref/heads/${encodeURIComponent(branch)}`);
+    const parentCommitSha=ref.object.sha;
+    const parentCommit=await api(`/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/git/commits/${parentCommitSha}`);
+    const baseTreeSha=parentCommit.tree.sha;
+    log(`✓ Branch loaded: ${branch}`,"ok");
+    log(`✓ Base tree: ${baseTreeSha}`,"muted");
+    for(let i=0;i<files.length;i++){
+      const file=files[i];
+      const path=finalRepoPath(file);
+      if(seen.has(path)) throw new Error(`مسیر تکراری: ${path}`);
+      seen.add(path);
+      const content=await fileToBase64(file);
+      const blob=await api(`/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/git/blobs`,{
+        method:"POST",
+        body:JSON.stringify({content,encoding:"base64"})
+      });
+      entries.push({path,mode:"100644",type:"blob",sha:blob.sha});
+      setProgress(i+1,files.length);
+      log(`✓ ${path}  ${humanSize(file.size)}`,"ok");
+    }
+    log("→ Creating tree...","muted");
+    const tree=await api(`/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/git/trees`,{
+      method:"POST",
+      body:JSON.stringify({base_tree:baseTreeSha,tree:entries})
+    });
+    log(`✓ Tree: ${tree.sha}`,"ok");
+    log("→ Creating commit...","muted");
+    const commit=await api(`/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/git/commits`,{
+      method:"POST",
+      body:JSON.stringify({message,tree:tree.sha,parents:[parentCommitSha]})
+    });
+    log(`✓ Commit: ${commit.sha}`,"ok");
+    log("→ Updating branch...","muted");
+    await api(`/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/git/refs/heads/${encodeURIComponent(branch)}`,{
+      method:"PATCH",
+      body:JSON.stringify({sha:commit.sha,force:false})
+    });
+    log(`✓ ${branch} updated successfully.`,"ok");
+    setStatus("آپلود کامل شد","ok");
+    progressBar.style.width="100%";
+    progressPercent.textContent="100%";
+    progressText.textContent=`${files.length} / ${files.length}`;
+  }catch(err){
+    log(`✕ ${err.message}`,"bad");
+    setStatus("آپلود ناموفق","bad");
+  }finally{
+    setBusy(false);
+  }
+}
+$("pickFolder").addEventListener("click",()=>folderInput.click());
+$("pickFiles").addEventListener("click",()=>filesInput.click());
+folderInput.addEventListener("change",e=>{
+  selectedFiles=[...e.target.files];
+  if(selectedFiles.length&&selectedFiles.every(f=>f.webkitRelativePath)) keepRootEl.checked=true;
+  refreshList();
+});
+filesInput.addEventListener("change",e=>{
+  selectedFiles=[...e.target.files];
+  keepRootEl.checked=false;
+  refreshList();
+});
+for(const el of [tokenEl,repoEl,branchEl,targetEl,commitMessage,keepRootEl]){
+  el.addEventListener("input",updateReady);
+  el.addEventListener("change",updateReady);
+}
+$("showToken").addEventListener("click",()=>{
+  const isPassword=tokenEl.type==="password";
+  tokenEl.type=isPassword?"text":"password";
+  $("showToken").textContent=isPassword?"مخفی":"نمایش";
+});
+checkBtn.addEventListener("click",checkConnection);
+uploadBtn.addEventListener("click",upload);
+["dragenter","dragover"].forEach(type=>drop.addEventListener(type,e=>{
+  e.preventDefault();
+  drop.classList.add("drag");
+}));
+["dragleave","drop"].forEach(type=>drop.addEventListener(type,e=>{
+  e.preventDefault();
+  drop.classList.remove("drag");
+}));
+drop.addEventListener("drop",e=>{
+  const files=[...e.dataTransfer.files];
+  if(files.length){
+    selectedFiles=files;
+    keepRootEl.checked=Boolean(files[0]?.webkitRelativePath);
+    refreshList();
+  }
+});
+updateReady();
+setProgress(0,0);
+</script>
+</body>
+</html>

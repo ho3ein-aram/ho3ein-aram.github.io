@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#0a0f1c">
+  <title>CyberPath — نقشه راه ایمن امنیت سایبری</title>
+  <meta name="description" content="نقشه راه آموزشی و ایمن برای یادگیری امنیت سایبری، تست نفوذ، دفاع، تحلیل و مهندسی امنیت.">
+  <style>
+    :root{
+      color-scheme:dark;
+      --bg:#070b14;
+      --bg-2:#0b1220;
+      --panel:rgba(12,19,33,.78);
+      --panel-solid:#0f1726;
+      --panel-2:rgba(19,29,48,.8);
+      --text:#e7eefc;
+      --muted:#8ea1bf;
+      --border:rgba(140,164,205,.16);
+      --border-strong:rgba(140,164,205,.28);
+      --accent:#67e8f9;
+      --accent-2:#8b5cf6;
+      --accent-3:#22c55e;
+      --warning:#f59e0b;
+      --danger:#fb7185;
+      --shadow:0 30px 80px rgba(0,0,0,.35);
+      --topbar-bg:rgba(7,11,20,.86);
+      --code-bg:rgba(0,0,0,.18);
+      --terminal-bg:#03070c;
+      --radius:24px;
+      --radius-sm:16px;
+      --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+      --sans:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,Arial,sans-serif;
+    }
+
+    :root[data-theme="light"]{
+      color-scheme:light;
+      --bg:#f4f7fb;
+      --bg-2:#eaf0f8;
+      --panel:rgba(255,255,255,.86);
+      --panel-solid:#ffffff;
+      --panel-2:rgba(247,250,255,.96);
+      --text:#0c1527;
+      --muted:#58677f;
+      --border:rgba(27,50,82,.14);
+      --border-strong:rgba(27,50,82,.24);
+      --accent:#087f8c;
+      --accent-2:#6d28d9;
+      --accent-3:#15803d;
+      --warning:#a4510a;
+      --danger:#be123c;
+      --shadow:0 24px 55px rgba(34,53,82,.14);
+      --topbar-bg:rgba(244,247,251,.88);
+      --code-bg:#f5f7fb;
+      --terminal-bg:#111827;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;background:var(--bg)}
+    body{
+      margin:0;
+      color:var(--text);
+      font-family:var(--sans);
+      background:
+        radial-gradient(circle at 15% 15%, rgba(103,232,249,.10), transparent 28%),
+        radial-gradient(circle at 90% 8%, rgba(139,92,246,.12), transparent 27%),
+        radial-gradient(circle at 70% 90%, rgba(34,197,94,.07), transparent 25%),
+        linear-gradient(140deg,var(--bg),var(--bg-2));
+      min-height:100vh;
+      overflow-x:clip;
+      transition:background .35s ease,color .35s ease;
+      overflow-wrap:anywhere;
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background-image:
+        linear-gradient(rgba(103,232,249,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(103,232,249,.025) 1px, transparent 1px);
+      background-size:36px 36px;
+      mask-image:linear-gradient(to bottom,rgba(0,0,0,.9),transparent 85%);
+      z-index:-1;
+    }
+
+    a{color:inherit;text-decoration:none}
+    button,input,select{font:inherit}
+    img,svg,video,canvas{max-width:100%;height:auto}
+    button{border:0}
+
+    .container{width:min(1200px,calc(100% - 32px));margin-inline:auto}
+    .container,.hero-grid,.stats,.controls,.roadmap,.learning-lab,.phase-body,.cards,.card,.lab-box{min-width:0}
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:100;
+      backdrop-filter:blur(18px);
+      background:var(--topbar-bg);
+      border-bottom:1px solid var(--border);
+    }
+
+    .nav{
+      min-height:72px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:18px;
+    }
+
+    .brand{display:flex;align-items:center;gap:12px;min-width:0}
+    .brand-mark{
+      width:42px;height:42px;border-radius:13px;
+      display:grid;place-items:center;
+      color:#031016;
+      font-family:var(--mono);
+      font-weight:900;
+      background:linear-gradient(135deg,var(--accent),#c4b5fd);
+      box-shadow:0 0 35px rgba(103,232,249,.18);
+      transform:rotate(-4deg);
+    }
+
+    .brand-copy{min-width:0;overflow:hidden}
+    .brand-title,.brand-sub{overflow-wrap:anywhere}
+    .brand-title{font-weight:900;letter-spacing:.3px}
+    .brand-sub{font-size:12px;color:var(--muted);margin-top:2px}
+
+    .nav-actions{display:flex;align-items:center;gap:9px;flex:0 0 auto}
+    .cyber-back{position:fixed;top:16px;right:16px;z-index:150;width:46px;height:46px;border:1px solid var(--border);border-radius:50%;background:var(--panel-solid);color:var(--text);display:grid;place-items:center;cursor:pointer;font-size:30px;line-height:1;box-shadow:var(--shadow);backdrop-filter:blur(10px);transition:.2s ease}
+    .cyber-back:hover{transform:translateY(-2px);border-color:var(--border-strong)}
+    .icon-btn{
+      width:42px;height:42px;border:1px solid var(--border);
+      background:var(--panel);color:var(--text);border-radius:13px;
+      cursor:pointer;display:grid;place-items:center;
+      transition:.25s ease;
+    }
+    .icon-btn:hover{transform:translateY(-2px);border-color:var(--border-strong);box-shadow:var(--shadow)}
+    .icon-btn:focus-visible,.btn:focus-visible,.search input:focus-visible,.filter:focus-visible{
+      outline:2px solid var(--accent);
+      outline-offset:3px;
+    }
+
+    .hero{padding:74px 0 26px}
+    .hero-grid{
+      display:grid;
+      grid-template-columns:minmax(0,1.3fr) minmax(0,.7fr);
+      gap:28px;
+      align-items:stretch;
+    }
+
+    .eyebrow{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:8px 12px;border:1px solid var(--border);
+      border-radius:999px;background:var(--panel);font-size:12px;
+      color:var(--muted);
+      box-shadow:0 10px 35px rgba(0,0,0,.12);
+    }
+    .dot{
+      width:7px;height:7px;border-radius:50%;background:var(--accent-3);
+      box-shadow:0 0 14px var(--accent-3);
+      animation:pulse 1.8s infinite;
+    }
+
+    h1{
+      margin:20px 0 0;
+      font-size:clamp(34px,5.5vw,72px);
+      line-height:1.08;
+      letter-spacing:-1.7px;
+      max-width:870px;
+      text-wrap:balance;
+    }
+    .gradient{
+      background:linear-gradient(135deg,var(--accent) 0%,#ddd6fe 48%,var(--accent-2) 100%);
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+    }
+
+    .hero-text{
+      margin:22px 0 0;
+      max-width:820px;
+      overflow-wrap:anywhere;
+      color:var(--muted);
+      line-height:1.95;
+      font-size:17px;
+    }
+
+    .hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}
+    .btn{
+      border:1px solid var(--border);
+      background:var(--panel);
+      color:var(--text);
+      padding:12px 16px;
+      border-radius:14px;
+      cursor:pointer;
+      transition:.25s ease;
+      font-weight:800;
+    }
+    .btn:hover{transform:translateY(-2px);border-color:var(--border-strong)}
+    .btn.primary{
+      border-color:transparent;
+      color:#031016;
+      background:linear-gradient(135deg,var(--accent),#a5b4fc);
+      box-shadow:0 12px 32px rgba(103,232,249,.16);
+    }
+
+    .terminal{
+      position:relative;
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      background:
+        linear-gradient(180deg,rgba(0,0,0,.18),rgba(0,0,0,.03)),
+        var(--panel);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      min-height:370px;
+    }
+    .terminal::after{
+      content:"";
+      position:absolute;
+      inset:auto -25% -30% auto;
+      width:340px;height:340px;
+      border-radius:50%;
+      background:radial-gradient(circle,rgba(139,92,246,.18),transparent 65%);
+      pointer-events:none;
+    }
+    .terminal-head{
+      display:flex;align-items:center;gap:8px;
+      padding:12px 15px;border-bottom:1px solid var(--border);
+    }
+    .terminal-dot{width:10px;height:10px;border-radius:50%;background:#64748b}
+    .terminal-title{font-family:var(--mono);font-size:12px;color:var(--muted);margin-inline:auto}
+    .terminal-body{
+      padding:20px 18px;
+      font:13px/1.9 var(--mono);
+      color:#c8d7ea;
+      white-space:pre-wrap;
+      min-height:305px;
+    }
+    html[data-theme="light"] .terminal-body{color:#25334c}
+    .prompt{color:var(--accent-3)}
+    .cmd{color:var(--accent)}
+    .comment{color:#64748b}
+    .blink{display:inline-block;width:8px;height:16px;background:var(--accent);vertical-align:-3px;animation:blink 1s steps(1) infinite}
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+      margin-top:22px;
+    }
+    .stat{
+      border:1px solid var(--border);
+      border-radius:18px;
+      background:var(--panel);
+      padding:16px;
+    }
+    .stat-value{font-size:26px;font-weight:900}
+    .stat-label{font-size:12px;color:var(--muted);margin-top:4px}
+
+    .safety{
+      margin:26px 0 14px;
+      padding:18px 20px;
+      border:1px solid color-mix(in srgb,var(--accent-3) 26%,var(--border));
+      background:linear-gradient(135deg,rgba(34,197,94,.08),var(--panel));
+      border-radius:20px;
+      display:flex;align-items:flex-start;gap:14px;
+    }
+    .safety-icon{
+      width:44px;height:44px;border-radius:13px;display:grid;place-items:center;
+      background:rgba(34,197,94,.12);font-size:22px;flex:none
+    }
+    .safety strong{display:block;margin-bottom:6px}
+    .safety p{margin:0;color:var(--muted);line-height:1.8;font-size:13px}
+
+    .section{padding:30px 0 12px}
+    .section-head{
+      display:flex;align-items:end;justify-content:space-between;gap:18px;
+      margin-bottom:16px;
+    }
+    .section-title{font-size:30px;letter-spacing:-.7px;margin:0}
+    .section-sub{color:var(--muted);font-size:13px;margin:6px 0 0;line-height:1.7}
+
+    .controls{
+      position:sticky;
+      top:84px;
+      z-index:30;
+      display:grid;
+      grid-template-columns:1fr auto auto;
+      gap:10px;
+      padding:12px;
+      margin:8px 0 18px;
+      border:1px solid var(--border);
+      border-radius:18px;
+      background:var(--panel-solid);
+      backdrop-filter:blur(15px);
+    }
+
+    .search{
+      display:flex;align-items:center;gap:10px;
+      border:1px solid var(--border);
+      background:var(--panel);
+      border-radius:14px;
+      padding:0 12px;
+    }
+    .search input{
+      min-width:0;width:100%;padding:12px 0;border:0;outline:0;
+      color:var(--text);background:transparent;
+      direction:rtl;
+    }
+    .search input::placeholder{color:#71839f}
+
+    .filter{
+      min-width:0;width:100%;
+      padding:11px 12px;
+      border:1px solid var(--border);
+      background:var(--panel);
+      color:var(--text);
+      border-radius:14px;
+      outline:0;
+    }
+
+    .roadmap{
+      display:grid;
+      gap:14px;
+      position:relative;
+    }
+    .roadmap::before{
+      content:"";
+      position:absolute;
+      top:18px;bottom:18px;right:20px;width:2px;
+      background:linear-gradient(var(--accent),rgba(139,92,246,.15));
+      opacity:.55;
+    }
+
+    .phase{
+      position:relative;
+      display:grid;
+      grid-template-columns:42px minmax(0,1fr);
+      gap:14px;
+      align-items:start;
+    }
+    .phase-marker{
+      width:42px;height:42px;border-radius:13px;
+      display:grid;place-items:center;
+      background:var(--panel-solid);
+      border:1px solid var(--border-strong);
+      box-shadow:0 0 0 5px var(--bg);
+      z-index:2;
+      font-family:var(--mono);
+      font-weight:900;
+      color:var(--accent);
+    }
+    .phase-body{
+      min-width:0;
+      border:1px solid var(--border);
+      border-radius:22px;
+      background:var(--panel);
+      overflow:hidden;
+      box-shadow:0 16px 40px rgba(0,0,0,.08);
+    }
+    .phase-head{
+      padding:18px 18px 14px;
+      min-width:0;
+      border-bottom:1px solid var(--border);
+      display:flex;justify-content:space-between;align-items:center;gap:12px;
+      cursor:pointer;
+    }
+    .phase-head > div:first-child{min-width:0}
+    .phase-name{font-weight:900;font-size:18px;overflow-wrap:anywhere}
+    .phase-meta{font-size:12px;color:var(--muted);line-height:1.7;overflow-wrap:anywhere}
+    .chev{transition:transform .25s ease;color:var(--muted)}
+    .phase.open .chev{transform:rotate(180deg)}
+    .phase-content{
+      display:none;
+      padding:15px;
+    }
+    .phase.open .phase-content{display:block;animation:slideDown .3s ease}
+
+    .cards{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+    }
+    .card{
+      position:relative;
+      border:1px solid var(--border);
+      border-radius:18px;
+      background:var(--panel-2);
+      padding:16px;
+      transition:.28s ease;
+      overflow:hidden;
+    }
+    .card::before{
+      content:"";
+      position:absolute;inset:0 auto auto 0;width:100%;height:1px;
+      background:linear-gradient(90deg,transparent,var(--accent),transparent);
+      opacity:.35;
+    }
+    .card:hover{transform:translateY(-4px);border-color:var(--border-strong);box-shadow:0 16px 35px rgba(0,0,0,.14)}
+    .card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;min-width:0}
+    .card-top > div:first-child{min-width:0}
+    .card-title{font-size:15px;font-weight:900;line-height:1.55;overflow-wrap:anywhere}
+    .card-tag{
+      flex:none;
+      border:1px solid var(--border);
+      padding:5px 8px;border-radius:999px;
+      color:var(--muted);font-size:10px;
+    }
+    .card-desc{color:var(--muted);font-size:12px;line-height:1.8;margin:9px 0 14px;overflow-wrap:anywhere}
+    .card-actions{display:flex;gap:8px;flex-wrap:wrap}
+    .link-btn,.mark-btn{
+      border:1px solid var(--border);
+      background:transparent;
+      color:var(--text);
+      padding:8px 10px;
+      border-radius:11px;
+      cursor:pointer;
+      font-size:12px;
+      font-weight:700;
+      transition:.22s ease;
+    }
+    .link-btn:hover,.mark-btn:hover{border-color:var(--border-strong);transform:translateY(-1px)}
+    .link-btn{color:var(--accent)}
+    .mark-btn.done{background:rgba(34,197,94,.12);color:var(--accent-3);border-color:rgba(34,197,94,.25)}
+
+    .learning-lab{
+      margin-top:26px;
+      display:grid;
+      grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+      gap:14px;
+    }
+    .lab-box{
+      border:1px solid var(--border);
+      background:var(--panel);
+      border-radius:22px;
+      padding:20px;
+    }
+    .lab-box h3{margin:0 0 9px;font-size:17px}
+    .lab-box p{margin:0;color:var(--muted);font-size:13px;line-height:1.85}
+    .code-block{
+      margin-top:14px;
+      border:1px solid var(--border);
+      background:var(--code-bg);
+      border-radius:16px;
+      overflow:hidden;
+    }
+    
+    .code-head{
+      display:flex;justify-content:space-between;align-items:center;
+      padding:10px 12px;border-bottom:1px solid var(--border);
+      font-size:11px;color:var(--muted);
+    }
+    pre{
+      margin:0;padding:15px;overflow:auto;max-width:100%;
+      direction:ltr;text-align:left;
+      font:12px/1.75 var(--mono);
+      color:#d8e4f5;
+    }
+    html[data-theme="light"] pre{color:#25334c}
+    .hl{color:var(--accent)}
+    .hl2{color:#c4b5fd}
+    .hl3{color:#86efac}
+    .muted-code{color:#6b7d98}
+
+    .terminal-lab{
+      margin-top:14px;
+      border:1px solid var(--border);
+      border-radius:16px;
+      overflow:hidden;
+      background:var(--terminal-bg);
+    }
+    .terminal-line{
+      padding:8px 12px;
+      border-bottom:1px solid rgba(255,255,255,.05);
+      font:12px/1.8 var(--mono);
+      color:#b9c8dc;
+    }
+    .terminal-line:last-child{border-bottom:0}
+    .terminal-line b{color:#86efac}
+
+    .footer{
+      margin-top:44px;
+      padding:30px 0 56px;
+      color:var(--muted);
+      text-align:center;
+      font-size:12px;
+      border-top:1px solid var(--border);
+      line-height:1.9;
+    }
+    .footer-inner{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px 18px;
+      flex-wrap:wrap;
+      min-width:0;
+    }
+    .footer-link{
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+      color:var(--accent);
+      font-weight:800;
+      padding:7px 10px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      background:var(--panel);
+    }
+    .footer-link:hover{border-color:var(--border-strong);transform:translateY(-1px)}
+
+    .modal{
+      position:fixed;inset:0;z-index:200;
+      display:none;align-items:center;justify-content:center;
+      padding:18px;
+      background:rgba(0,0,0,.6);
+      backdrop-filter:blur(10px);
+    }
+    .modal.show{display:flex;animation:fade .2s ease}
+    .modal-box{
+      width:min(720px,100%);
+      max-height:min(84vh,820px);
+      overflow:auto;
+      border:1px solid var(--border-strong);
+      border-radius:24px;
+      background:var(--panel-solid);
+      box-shadow:0 30px 100px rgba(0,0,0,.45);
+      padding:22px;
+      animation:pop .24s ease;
+    }
+    .modal-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .modal-title{font-size:21px;font-weight:900}
+    .modal-close{
+      border:1px solid var(--border);
+      background:var(--panel);
+      color:var(--text);
+      border-radius:12px;
+      width:38px;height:38px;
+      cursor:pointer;
+    }
+    .modal-body{margin-top:16px;color:var(--muted);line-height:1.95;font-size:14px;overflow-wrap:anywhere}
+    body.modal-open{overflow:hidden}
+    .modal-body code{font-family:var(--mono);color:var(--accent)}
+
+    .toast{
+      position:fixed;
+      left:18px;bottom:18px;z-index:250;
+      border:1px solid var(--border);
+      background:var(--panel-solid);
+      padding:12px 14px;
+      border-radius:14px;
+      color:var(--text);
+      box-shadow:var(--shadow);
+      transform:translateY(30px);
+      opacity:0;
+      pointer-events:none;
+      transition:.25s ease;
+      font-size:12px;
+    }
+    .toast.show{transform:translateY(0);opacity:1}
+
+    .progress-wrap{
+      margin-top:14px;
+      border:1px solid var(--border);
+      border-radius:18px;
+      background:var(--panel);
+      padding:14px 16px;
+      display:grid;
+      grid-template-columns:auto 1fr auto;
+      align-items:center;
+      gap:12px;
+    }
+    .progress-label{font-size:12px;font-weight:800}
+    .progress-bar{
+      height:9px;border-radius:999px;
+      background:rgba(127,145,172,.12);
+      overflow:hidden;
+    }
+    .progress-fill{
+      height:100%;width:0;
+      background:linear-gradient(90deg,var(--accent-3),var(--accent));
+      border-radius:999px;
+      transition:width .4s ease;
+    }
+    .progress-pct{font-family:var(--mono);font-size:12px;color:var(--accent)}
+
+    .backtop{
+      position:fixed;right:18px;bottom:18px;z-index:120;
+      width:44px;height:44px;border:1px solid var(--border);
+      border-radius:14px;background:var(--panel-solid);color:var(--text);
+      cursor:pointer;opacity:0;transform:translateY(12px);pointer-events:none;
+      transition:.25s ease;
+    }
+    .backtop.show{opacity:1;transform:translateY(0);pointer-events:auto}
+
+    .empty{
+      padding:40px 20px;text-align:center;
+      border:1px dashed var(--border-strong);
+      border-radius:18px;color:var(--muted);
+      display:none;
+    }
+
+    .reveal{opacity:0;transform:translateY(20px);transition:.65s ease}
+    .reveal.visible{opacity:1;transform:none}
+
+    @keyframes pulse{0%,100%{transform:scale(1);opacity:.85}50%{transform:scale(1.35);opacity:1}}
+    @keyframes blink{50%{opacity:0}}
+    @keyframes fade{from{opacity:0}to{opacity:1}}
+    @keyframes pop{from{opacity:0;transform:scale(.96) translateY(8px)}to{opacity:1;transform:none}}
+    @keyframes slideDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+
+    @media (max-width:950px){
+      .hero-grid{grid-template-columns:minmax(0,1fr)}
+      .controls{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+      .controls .search{grid-column:1/-1}
+      .cards{grid-template-columns:minmax(0,1fr)}
+      .learning-lab{grid-template-columns:minmax(0,1fr)}
+    }
+
+    @media (max-width:680px){
+      .container{width:calc(100% - 20px);max-width:1200px}
+      .hero{padding-top:40px}
+      h1{font-size:clamp(34px,10vw,44px);letter-spacing:-1.1px}
+      .hero-text{font-size:15px}
+      .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .controls{position:relative;top:auto;grid-template-columns:1fr}
+      .controls .search{grid-column:auto}
+      .filter{width:100%}
+      .safety{padding:15px}
+      .roadmap::before{right:18px}
+      .phase{grid-template-columns:36px minmax(0,1fr);gap:11px}
+      .phase-marker{width:36px;height:36px;border-radius:11px}
+      .phase-head{padding:15px}
+      .phase-name{font-size:16px}
+      .progress-wrap{grid-template-columns:minmax(0,1fr) auto}
+      .progress-bar{grid-column:1/-1;grid-row:2}
+    }
+
+    @media (prefers-reduced-motion:reduce){
+      *,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}
+    }
+  </style>
+  <script>
+    (function(){
+      try{
+        const saved=localStorage.getItem("cyberpath-theme");
+        const theme=saved==="light"||saved==="dark"
+          ? saved
+          : (window.matchMedia&&window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+        document.documentElement.dataset.theme=theme;
+      }catch(e){
+        document.documentElement.dataset.theme="dark";
+      }
+    })();
+  </script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container nav">
+      <a class="brand" href="#top">
+        <div class="brand-mark">></div>
+        <div class="brand-copy">
+          <div class="brand-title">CyberPath</div>
+          <div class="brand-sub">Safe Cybersecurity Roadmap</div>
+        </div>
+      </a>
+      <div class="nav-actions">
+        <button class="icon-btn" id="themeBtn" type="button" title="تغییر حالت نمایش" aria-label="تغییر حالت نمایش">☀️</button>
+        <button class="icon-btn" id="focusBtn" type="button" title="رفتن به نقشه راه" aria-label="رفتن به نقشه راه">⌘</button>
+      </div>
+    </div>
+  </header>
+
+  <button class="cyber-back" type="button" title="بازگشت به مبانی" aria-label="بازگشت به مبانی" onclick="location.href='foundations.html'">‹</button>
+
+  <main id="top">
+    <section class="hero container">
+      <div class="hero-grid">
+        <div class="reveal">
+          <div class="eyebrow"><span class="dot"></span> آموزش عملی، قانونی و آزمایشگاهی</div>
+          <h1>از <span class="gradient">مبانی</span> تا پژوهش امنیتی؛<br>یک مسیر واقعی برای هکرِ <span class="gradient">اخلاقی</span>.</h1>
+          <p class="hero-text">
+            این صفحه منابعی را که فرستادی در یک مسیر مرحله‌ای مرتب می‌کند تا بتوانی شبکه، وب، سیستم‌عامل، مهندسی معکوس،
+            دفاع، تحلیل تهدید، Bug Bounty، امنیت موبایل، IoT و حوزه‌های تخصصی‌تر را در محیط‌های مجاز تمرین کنی.
+          </p>
+          <div class="hero-actions">
+            <a class="btn primary" href="#roadmap">شروع نقشه راه ←</a>
+            <button class="btn" id="randomBtn" type="button">مسیر تصادفی 🎲</button>
+            <button class="btn" id="copyRoadmapBtn" type="button">کپی چک‌لیست</button>
+          </div>
+        </div>
+
+        <div class="terminal reveal">
+          <div class="terminal-head">
+            <span class="terminal-dot"></span>
+            <span class="terminal-dot"></span>
+            <span class="terminal-dot"></span>
+            <span class="terminal-title">student@cyberpath:~</span>
+          </div>
+          <div class="terminal-body" id="typingTerminal"></div>
+        </div>
+      </div>
+
+      <div class="stats reveal">
+        <div class="stat"><div class="stat-value" id="resourceCount">0</div><div class="stat-label">منبع/Repository</div></div>
+        <div class="stat"><div class="stat-value" id="phaseCount">0</div><div class="stat-label">مرحلهٔ یادگیری</div></div>
+        <div class="stat"><div class="stat-value">100%</div><div class="stat-label">قابل اجرا در لابراتوار مجاز</div></div>
+        <div class="stat"><div class="stat-value" id="completedCount">0</div><div class="stat-label">منبع علامت‌گذاری‌شده</div></div>
+      </div>
+
+      <div class="safety reveal">
+        <div class="safety-icon">🛡️</div>
+        <div>
+          <strong>قانون اصلی: فقط روی دارایی‌ای تمرین کن که مجوز داری.</strong>
+          <p>
+            منابع تهاجمی مانند Pentest، Payloads، Password Cracking، Malware Analysis و Red Teaming در این صفحه
+            صرفاً برای آموزش و آزمایش در CTF، ماشین مجازی، محیط شخصی یا برنامهٔ مجاز Bug Bounty معرفی شده‌اند.
+            از اجرای تکنیک‌ها روی سامانه‌های واقعی بدون اجازه خودداری کن.
+          </p>
+        </div>
+      </div>
+
+      <div class="progress-wrap reveal">
+        <div class="progress-label">پیشرفت مسیر</div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-pct" id="progressPct">0%</div>
+      </div>
+    </section>
+
+    <section class="section container" id="roadmap">
+      <div class="section-head reveal">
+        <div>
+          <h2 class="section-title">🧭 نقشه راه</h2>
+          <p class="section-sub">از پایه‌ها شروع کن، محیط آزمایش بساز، سپس سراغ شاخه‌های تخصصی برو.</p>
+        </div>
+      </div>
+
+      <div class="controls reveal">
+        <label class="search" aria-label="جست‌وجو">
+          <span>⌕</span>
+          <input id="searchInput" type="search" placeholder="جست‌وجوی منبع، حوزه یا توضیح...">
+        </label>
+        <select class="filter" id="phaseFilter" aria-label="فیلتر مرحله">
+          <option value="all">همهٔ مراحل</option>
+        </select>
+        <select class="filter" id="typeFilter" aria-label="فیلتر وضعیت">
+          <option value="all">همهٔ منابع</option>
+          <option value="done">انجام‌شده</option>
+          <option value="todo">انجام‌نشده</option>
+        </select>
+      </div>
+
+      <div class="roadmap" id="roadmapList"></div>
+      <div class="empty" id="emptyState">منبعی با این فیلتر پیدا نشد. 🔎</div>
+    </section>
+
+    <section class="section container">
+      <div class="section-head reveal">
+        <div>
+          <h2 class="section-title">🧪 لابراتوار امن</h2>
+          <p class="section-sub">تمرین را به محیط جدا از سیستم واقعی منتقل کن؛ هدف، یادگیری رفتار و دفاع است.</p>
+        </div>
+      </div>
+
+      <div class="learning-lab">
+        <article class="lab-box reveal">
+          <h3>۱) اصل جداسازی</h3>
+          <p>
+            برای تمرین از VM، شبکهٔ Host-only، Docker، CTF و اپ‌های عمداً آسیب‌پذیر استفاده کن.
+            دادهٔ واقعی، حساب‌های واقعی و سامانه‌های عمومی را وارد آزمایش نکن.
+          </p>
+          <div class="terminal-lab">
+            <div class="terminal-line"><b>$</b> mkdir -p ~/cyber-lab/{notes,pcaps,logs}</div>
+            <div class="terminal-line"><b>$</b> echo "authorized-lab" &gt; ~/cyber-lab/README.txt</div>
+            <div class="terminal-line"><b>$</b> printf "scope: localhost only\n" &gt;&gt; ~/cyber-lab/README.txt</div>
+          </div>
+        </article>
+
+        <article class="lab-box reveal">
+          <h3>۲) تمرین تحلیل دفاعی</h3>
+          <p>
+            یک درخواست ساده را در محیط محلی ثبت کن، لاگ بگیر، شاخص‌ها را استخراج کن و سپس برای همان رفتار
+            یک کنترل دفاعی طراحی کن. این حلقهٔ «مشاهده → فرضیه → آزمایش → تشخیص» پایهٔ خوبی برای Security Engineering است.
+          </p>
+          <div class="code-block">
+            <div class="code-head"><span>local-log-analysis.py</span><span>Python</span></div>
+            <pre><code>import re
+from collections import Counter
+
+log = """GET /index HTTP/1.1
+GET /admin HTTP/1.1
+GET /index HTTP/1.1
+GET /missing HTTP/1.1"""
+
+paths = re.findall(r"GET\s+(\S+)", log)
+counts = Counter(paths)
+
+for path, count in counts.most_common():
+    print(f"{path:12} {count}")</code></pre>
+          </div>
+        </article>
+
+        <article class="lab-box reveal">
+          <h3>۳) نمونهٔ کدنویسی امن</h3>
+          <p>برای یادگیری AppSec، اول نسخهٔ ناامن را در آزمایشگاه فرضی درک کن، سپس نسخهٔ امن را پیاده‌سازی کن.</p>
+          <div class="code-block">
+            <div class="code-head"><span>node-security.js</span><span>Node.js</span></div>
+            <pre><code><span class="hl">const</span> express = require("express");
+<span class="hl">const</span> app = express();
+
+app.use(express.json());
+
+app.get("/user", (req, res) =&gt; {
+  <span class="hl2">const id = Number(req.query.id);</span>
+  <span class="hl3">if (!Number.isInteger(id) || id &lt; 1) {
+    return res.status(400).json({ error: "invalid id" });
+  }</span>
+  res.json({ id });
+});
+
+app.listen(3000);</code></pre>
+          </div>
+        </article>
+
+        <article class="lab-box reveal">
+          <h3>۴) جریان یادگیری پیشنهادی</h3>
+          <p>
+            یک موضوع را انتخاب کن، یک لابراتوار کوچک بساز، رفتار را مشاهده کن، ابزار را مستند کن،
+            شواهد را ثبت کن، کنترل دفاعی تعریف کن و در پایان یک گزارش کوتاه بنویس.
+          </p>
+          <div class="code-block">
+            <div class="code-head"><span>study-loop.txt</span><span>Method</span></div>
+            <pre><code>[01] Learn
+  ↓
+[02] Build isolated lab
+  ↓
+[03] Observe
+  ↓
+[04] Test only in scope
+  ↓
+[05] Log evidence
+  ↓
+[06] Mitigate
+  ↓
+[07] Write report</code></pre>
+          </div>
+        </article>
+      </div>
+    </section>
+
+  </main>
+
+  <button class="backtop" id="backTop" type="button" title="بازگشت به بالا" aria-label="بازگشت به بالا">↑</button>
+
+  <div class="modal" id="modal">
+    <div class="modal-box">
+      <div class="modal-top">
+        <div class="modal-title" id="modalTitle">جزئیات</div>
+        <button class="modal-close" id="modalClose" type="button" aria-label="بستن">×</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const resources = [
+      {phase:"مبانی و دید کلی", title:"Android Security", desc:"Collection of Android security related resources", url:"https://github.com/ashishb/android-security-awesome", tags:["Android","Mobile"]},
+      {phase:"مبانی و دید کلی", title:"AppSec", desc:"Resources for learning about application security", url:"https://github.com/paragonie/awesome-appsec", tags:["AppSec","Web"]},
+      {phase:"شناسایی و سطح حمله", title:"Asset Discovery", desc:"List of resources which help during asset discovery phase of a security assessment engagement", url:"https://github.com/redhuntlabs/Awesome-Asset-Discovery", tags:["Recon","Asset Discovery"]},
+      {phase:"شناسایی و سطح حمله", title:"OSINT", desc:"List of amazingly awesome Open Source Intelligence tools", url:"https://github.com/jivoi/awesome-osint", tags:["OSINT","Recon"]},
+      {phase:"شناسایی و سطح حمله", title:"Cybersources", desc:"A collection of all types of tools and resources for cybersecurity", url:"https://github.com/bst04/CyberSources", tags:["Resources","Recon"]},
+      {phase:"وب و API", title:"Bug Bounty", desc:"List of Bug Bounty Programs and write-ups from the Bug Bounty hunters", url:"https://github.com/djadmin/awesome-bug-bounty", tags:["Bug Bounty","Web"]},
+      {phase:"وب و API", title:"Web Hacking", desc:"List of web application security", url:"https://github.com/infoslack/awesome-web-hacking", tags:["Web","Pentest"]},
+      {phase:"وب و API", title:"Web Security", desc:"Curated list of Web Security materials and resources", url:"https://github.com/qazbnm456/awesome-web-security", tags:["Web","Security"]},
+      {phase:"وب و API", title:"API Security Checklist", desc:"Checklist of the most important security countermeasures when designing, testing, and releasing your API", url:"https://github.com/shieldfy/API-Security-Checklist", tags:["API","Secure Design"]},
+      {phase:"وب و API", title:"Hacker101", desc:"A free class for web security by HackerOne", url:"https://github.com/Hacker0x01/hacker101", tags:["Training","Web"]},
+      {phase:"وب و API", title:"PHP Security", desc:"Libraries for generating secure random numbers, encrypting data and scanning for vulnerabilities", url:"https://github.com/ziadoz/awesome-php#security", tags:["PHP","AppSec"]},
+      {phase:"دفاع و مهندسی امنیت", title:"Detection Engineering", desc:"Resources for designing, building, and operating detective cybersecurity controls", url:"https://github.com/infosecB/awesome-detection-engineering", tags:["Detection","Blue Team"]},
+      {phase:"دفاع و مهندسی امنیت", title:"DevSecOps", desc:"List of awesome DevSecOps tools with the help from community experiments and contributions", url:"https://github.com/devsecops/awesome-devsecops", tags:["DevSecOps","CI/CD"]},
+      {phase:"دفاع و مهندسی امنیت", title:"Incident Response", desc:"List of tools for incident response", url:"https://github.com/meirwah/awesome-incident-response", tags:["IR","Blue Team"]},
+      {phase:"دفاع و مهندسی امنیت", title:"Threat Intelligence", desc:"List of Awesome Threat Intelligence resources", url:"https://github.com/hslatman/awesome-threat-intelligence", tags:["Threat Intel","Detection"]},
+      {phase:"دفاع و مهندسی امنیت", title:"IOC", desc:"Collection of sources of indicators of compromise", url:"https://github.com/sroberts/awesome-iocs", tags:["IOC","Threat Intel"]},
+      {phase:"دفاع و مهندسی امنیت", title:"ThreatHunter-Playbook", desc:"Threat hunter's playbook to aid the development of techniques and hypothesis for hunting campaigns", url:"https://github.com/OTRF/ThreatHunter-Playbook", tags:["Threat Hunting","Blue Team"]},
+      {phase:"دفاع و مهندسی امنیت", title:"Suricata", desc:"Suricata IDS/IPS and network security monitoring resources", url:"https://github.com/satta/awesome-suricata", tags:["IDS","IPS","Network"]},
+      {phase:"شبکه و تحلیل ترافیک", title:"Pcaptools", desc:"Collection of tools developed by researchers in the Computer Science area to process network traces", url:"https://github.com/caesar0301/awesome-pcaptools", tags:["PCAP","Network"]},
+      {phase:"شبکه و تحلیل ترافیک", title:"Tor", desc:"Resources about the Tor network and anonymous communication", url:"https://github.com/polycarbohydrate/awesome-tor", tags:["Privacy","Network"]},
+      {phase:"سیستم‌عامل و لینوکس", title:"Hacking", desc:"List of Hacking tutorials, tools and resources", url:"https://github.com/carpedm20/awesome-hacking", tags:["General","Linux"]},
+      {phase:"سیستم‌عامل و لینوکس", title:"Shell", desc:"List of awesome command-line frameworks, toolkits, guides and gizmos to make complete use of shell", url:"https://github.com/alebcay/awesome-shell", tags:["Shell","CLI"]},
+      {phase:"سیستم‌عامل و لینوکس", title:"GTFOBins", desc:"A curated list of Unix binaries that can be exploited by an attacker to bypass local security restrictions", url:"https://gtfobins.github.io", tags:["Linux","Privilege Escalation"]},
+      {phase:"سیستم‌عامل و لینوکس", title:"Linux Kernel Exploitation", desc:"A bunch of links related to Linux kernel fuzzing and exploitation", url:"https://github.com/xairy/linux-kernel-exploitation", tags:["Kernel","Fuzzing"]},
+      {phase:"پژوهش تهاجمی در محیط مجاز", title:"Pentest", desc:"List of penetration testing resources, tools and techniques", url:"https://github.com/enaqx/awesome-pentest", tags:["Pentest","Red Team"]},
+      {phase:"پژوهش تهاجمی در محیط مجاز", title:"Red Teaming Toolkit", desc:"Open-source security tools for red teamers and threat hunters", url:"https://github.com/infosecn1nja/Red-Teaming-Toolkit", tags:["Red Team","Threat Hunting"]},
+      {phase:"پژوهش تهاجمی در محیط مجاز", title:"Payloads", desc:"Collection of web attack payloads", url:"https://github.com/foospidy/payloads", tags:["Web","Payloads"]},
+      {phase:"پژوهش تهاجمی در محیط مجاز", title:"PayloadsAllTheThings", desc:"List of useful payloads and bypass for Web Application Security and Pentest/CTF", url:"https://github.com/swisskyrepo/PayloadsAllTheThings", tags:["Web","Payloads","CTF"]},
+      {phase:"پژوهش تهاجمی در محیط مجاز", title:"SecLists", desc:"Collection of multiple types of lists used during security assessments", url:"https://github.com/danielmiessler/SecLists", tags:["Wordlists","Assessment"]},
+      {phase:"پژوهش تهاجمی در محیط مجاز", title:"Password Cracking", desc:"Tools and resources for recovering passwords", url:"https://github.com/n0kovo/awesome-password-cracking", tags:["Passwords","Assessment"]},
+      {phase:"CTF و تمرین عملی", title:"CTF", desc:"List of CTF frameworks, libraries, resources and software", url:"https://github.com/apsdehal/awesome-ctf", tags:["CTF","Training"]},
+      {phase:"CTF و تمرین عملی", title:"Cyber Skills", desc:"Curated list of hacking environments where you can train your cyber skills legally and safely", url:"https://github.com/joe-shenouda/awesome-cyber-skills", tags:["Labs","Training"]},
+      {phase:"CTF و تمرین عملی", title:"Cyber Security University", desc:"Free educational resources that focus on learning cybersecurity by doing", url:"https://github.com/brootware/awesome-cyber-security-university", tags:["Training","Learning"]},
+      {phase:"CTF و تمرین عملی", title:"Capsulecorp Pentest", desc:"Vagrant+Ansible virtual network penetration testing lab", url:"https://github.com/r3dy/capsulecorp-pentest", tags:["Lab","Virtualization"]},
+      {phase:"CTF و تمرین عملی", title:"Vulhub", desc:"Pre-Built Vulnerable Environments Based on Docker-Compose", url:"https://github.com/vulhub/vulhub", tags:["Docker","Labs"]},
+      {phase:"CTF و تمرین عملی", title:"Infosec Getting Started", desc:"A collection of resources, documentation, links, etc to help people learn about Infosec", url:"https://github.com/gradiuscypher/infosec_getting_started", tags:["Getting Started","Learning"]},
+      {phase:"تحلیل بدافزار و مهندسی معکوس", title:"Malware Analysis", desc:"List of awesome malware analysis tools", url:"https://github.com/rshipp/awesome-malware-analysis", tags:["Malware","Analysis"]},
+      {phase:"تحلیل بدافزار و مهندسی معکوس", title:"Malware Persistence", desc:"Techniques adversaries use to maintain system access across restarts", url:"https://github.com/Karneades/awesome-malware-persistence", tags:["Persistence","Research"]},
+      {phase:"تحلیل بدافزار و مهندسی معکوس", title:"Reversing", desc:"Collection of resources to learn Reverse Engineering from start", url:"https://github.com/HACKE-RC/awesome-reversing", tags:["Reversing","RE"]},
+      {phase:"تحلیل بدافزار و مهندسی معکوس", title:"Reverse Engineering", desc:"List of Reverse Engineering articles, books, and papers", url:"https://github.com/onethawt/reverseengineering-reading-list", tags:["Reversing","Research"]},
+      {phase:"تحلیل بدافزار و مهندسی معکوس", title:"Executable Packing", desc:"Resources about executable packing and unpacking", url:"https://github.com/packing-box/awesome-executable-packing", tags:["Packing","RE"]},
+      {phase:"فازینگ و کشف آسیب‌پذیری", title:"Fuzzing", desc:"Resources for learning Fuzzing and initial phases of Exploit Development like root cause analysis", url:"https://github.com/secfigo/Awesome-Fuzzing", tags:["Fuzzing","Vulnerability Research"]},
+      {phase:"فازینگ و کشف آسیب‌پذیری", title:"CVE PoC", desc:"List of CVE Proof of Concepts updated daily by Trickest", url:"https://github.com/trickest/cve", tags:["CVE","PoC"]},
+      {phase:"امنیت موبایل و دستگاه", title:"OSX and iOS Security", desc:"OSX and iOS related security tools", url:"https://github.com/ashishb/osx-and-ios-security-awesome", tags:["iOS","Apple"]},
+      {phase:"امنیت موبایل و دستگاه", title:"Embedded and IoT Security", desc:"A curated list of awesome resources about embedded and IoT security", url:"https://github.com/fkie-cad/awesome-embedded-and-iot-security", tags:["Embedded","IoT"]},
+      {phase:"امنیت موبایل و دستگاه", title:"IoT and Hardware Security", desc:"Collection of tools, books, resources and software about IoT and hardware security", url:"https://github.com/kayranfatih/Awesome-iot-and-hardware-security", tags:["IoT","Hardware"]},
+      {phase:"امنیت موبایل و دستگاه", title:"Drone Hacking", desc:"List of Drone hacking tools and resources", url:"https://github.com/nicholasaleks/Awesome-Drone-Hacking", tags:["Drone","Hardware"]},
+      {phase:"امنیت موبایل و دستگاه", title:"Vehicle Security", desc:"List of resources for learning about vehicle security and car hacking", url:"https://github.com/jaredthecoder/awesome-vehicle-security", tags:["Vehicle","Embedded"]},
+      {phase:"امنیت تخصصی", title:"Cellular Hacking", desc:"Research in the 3G/4G/5G cellular security space", url:"https://github.com/W00t3k/Awesome-Cellular-Hacking", tags:["Cellular","5G"]},
+      {phase:"امنیت تخصصی", title:"Industrial Control System Security", desc:"Resources related to ICS security", url:"https://github.com/hslatman/awesome-industrial-control-system-security", tags:["ICS","OT"]},
+      {phase:"امنیت تخصصی", title:"Mainframe Hacking", desc:"List of Mainframe Hacking/Pentesting resources", url:"https://github.com/samanL33T/Awesome-Mainframe-Hacking", tags:["Mainframe","Pentest"]},
+      {phase:"امنیت تخصصی", title:"Real-time Communications hacking & pentesting resources", desc:"Covers VoIP, WebRTC and VoLTE security related topics", url:"https://github.com/EnableSecurity/awesome-rtc-hacking", tags:["VoIP","WebRTC"]},
+      {phase:"امنیت تخصصی", title:"RF Security Toolkit", desc:"Collection of Radio Frequency Communication Protocol Hacktools", url:"https://github.com/cn0xroot/RFSec-ToolKit", tags:["RF","Hardware"]},
+      {phase:"امنیت تخصصی", title:"Web3 Security", desc:"Curated list of Web3 Security materials for Pentesters and Bug Hunters", url:"https://github.com/Anugrahsr/Awesome-web3-Security", tags:["Web3","Blockchain"]},
+      {phase:"امنیت هوش مصنوعی", title:"Prompt Injection", desc:"Prompt injection vulnerabilities targeting AI and LLM systems", url:"https://github.com/Joe-B-Security/awesome-prompt-injection", tags:["LLM","AI Security"]},
+      {phase:"امنیت هوش مصنوعی", title:"AI Security", desc:"Curated list of AI security resources", url:"https://github.com/DeepSpaceHarbor/Awesome-AI-Security", tags:["AI","Security"]},
+      {phase:"امنیت هوش مصنوعی", title:"Machine Learning for Cyber Security", desc:"Curated list of tools and resources related to the use of machine learning for cybersecurity", url:"https://github.com/jivoi/awesome-ml-for-cybersecurity", tags:["ML","Cybersecurity"]},
+      {phase:"امنیت هوش مصنوعی", title:"Reinforcement Learning for Cyber Security", desc:"List of resources about reinforcement learning for security", url:"https://github.com/Kim-Hammar/awesome-rl-for-cybersecurity", tags:["RL","Cybersecurity"]},
+      {phase:"کریپتوگرافی و داده", title:"Cryptography", desc:"Cryptography resources", url:"https://github.com/sobolevn/awesome-cryptography", tags:["Cryptography","Foundations"]},
+      {phase:"کریپتوگرافی و داده", title:"CyberChef", desc:"Simple web app for analysing and decoding data", url:"https://gchq.github.io/CyberChef/", tags:["Analysis","Encoding"]},
+      {phase:"کریپتوگرافی و داده", title:"Probable Wordlists", desc:"Wordlists sorted by probability originally created for password generation and testing", url:"https://github.com/berzerk0/Probable-Wordlists", tags:["Wordlists","Research"]},
+      {phase:"تحلیل ایستا و کیفیت کد", title:"Static Analysis", desc:"List of static analysis tools, linters and code quality checkers for various programming languages", url:"https://github.com/analysis-tools-dev/static-analysis", tags:["SAST","Code Quality"]},
+      {phase:"تحلیل ایستا و کیفیت کد", title:"Node.js Security", desc:"Curated list of tools, security incidents and resources around Node.js security", url:"https://github.com/lirantal/awesome-nodejs-security", tags:["Node.js","AppSec"]},
+      {phase:"تحلیل و جرم‌یابی دیجیتال", title:"Forensics", desc:"List of awesome forensic analysis tools", url:"https://github.com/Cugu/awesome-forensics", tags:["Forensics","DFIR"]},
+      {phase:"تحلیل و جرم‌یابی دیجیتال", title:"APT Notes", desc:"Various public documents, whitepapers and articles about APT campaigns", url:"https://github.com/kbandla/APTnotes", tags:["APT","Threat Research"]},
+      {phase:"دانشنامه و مطالعه", title:"InfoSec", desc:"List of awesome infosec courses and training resources", url:"https://github.com/onlurking/awesome-infosec", tags:["Courses","Learning"]},
+      {phase:"دانشنامه و مطالعه", title:"Security", desc:"Collection of security software, libraries, documents, books and resources", url:"https://github.com/sbilly/awesome-security", tags:["Resources","Reference"]},
+      {phase:"دانشنامه و مطالعه", title:"Sec Talks", desc:"List of security talks", url:"https://github.com/PaulSec/awesome-sec-talks", tags:["Talks","Research"]},
+      {phase:"دانشنامه و مطالعه", title:"The Art of Hacking Series", desc:"Thousands of cybersecurity-related references", url:"https://github.com/The-Art-of-Hacking/h4cker", tags:["Reference","Learning"]},
+      {phase:"دانشنامه و مطالعه", title:"Infosec Reference", desc:"Information Security Reference", url:"https://github.com/rmusser01/Infosec_Reference", tags:["Reference","Learning"]},
+      {phase:"دانشنامه و مطالعه", title:"Free Programming Books", desc:"Free programming books for developers", url:"https://github.com/EbookFoundation/free-programming-books", tags:["Programming","Books"]},
+      {phase:"YARA و شناسایی", title:"YARA", desc:"List of YARA rules, tools and people", url:"https://github.com/InQuest/awesome-yara", tags:["YARA","Detection"]},
+      {phase:"استخراج و دسترسی فیزیکی", title:"Red Team Physical Tools", desc:"Curated list of tools for physical security, red teaming, and tactical covert entry", url:"https://github.com/DavidProbinsky/RedTeam-Physical-Tools", tags:["Physical Security","Red Team"]},
+      {phase:"CI/CD و زنجیره تأمین", title:"CI/CD Attacks", desc:"Offensive research of CI/CD systems and deployment processes", url:"https://github.com/TupleType/awesome-cicd-attacks", tags:["CI/CD","Supply Chain"]},
+      {phase:"زنجیره دفاعی و گزارش‌دهی", title:"Annual Security Reports", desc:"Cybersecurity trends, insights, and challenges from annual reports", url:"https://github.com/jacobdjwilson/awesome-annual-security-reports", tags:["Reports","Trends"]},
+      {phase:"زنجیره دفاعی و گزارش‌دهی", title:"Security Cheatsheets", desc:"OWASP Cheat Sheet Series for application security", url:"https://github.com/OWASP/CheatSheetSeries", tags:["OWASP","Defensive"]},
+      {phase:"هانی‌پات و فریب", title:"Honeypots", desc:"List of honeypot resources", url:"https://github.com/paralax/awesome-honeypots", tags:["Honeypot","Detection"]},
+      {phase:"هانی‌پات و فریب", title:"Detection Lab", desc:"Vagrant & Packer scripts to build a lab environment complete with security tooling and logging best practices", url:"https://github.com/clong/DetectionLab", tags:["Lab","Logging"]}
+    ];
+
+    const phaseGuide = {
+      "مبانی و دید کلی":"در این مرحله واژگان امنیت، معماری، مدل تهدید، سیستم‌عامل و ذهنیت پژوهشگر را بساز.",
+      "شناسایی و سطح حمله":"یاد بگیر دارایی‌ها و اطلاعات عمومی را در محدودهٔ مجاز شناسایی و مستندسازی کنی.",
+      "وب و API":"HTTP، Session، Auth، Input Validation، API Design و دفاع در برابر خطاهای رایج را تمرین کن.",
+      "دفاع و مهندسی امنیت":"لاگ، تشخیص، IOC، Incident Response و طراحی کنترل‌های دفاعی را یاد بگیر.",
+      "شبکه و تحلیل ترافیک":"ساختار packet و جریان شبکه را در لابراتوار خودت مشاهده و تحلیل کن.",
+      "سیستم‌عامل و لینوکس":"Shell، permission، process، service و مبانی kernel را در ماشین آزمایشگاهی یاد بگیر.",
+      "پژوهش تهاجمی در محیط مجاز":"تکنیک‌های ارزیابی امنیتی را فقط در CTF، VM، محیط شخصی یا Scope رسمی تمرین کن.",
+      "CTF و تمرین عملی":"یادگیری را با چالش‌های کنترل‌شده و قابل تکرار تثبیت کن.",
+      "تحلیل بدافزار و مهندسی معکوس":"فایل‌ها و برنامه‌های آزمایشی را در محیط ایزوله بررسی کن و روی رفتار و تحلیل تمرکز کن.",
+      "فازینگ و کشف آسیب‌پذیری":"ورودی‌های غیرمنتظره، crash، root cause و اصلاح کد را به‌صورت آزمایشگاهی بررسی کن.",
+      "امنیت موبایل و دستگاه":"Android، iOS، IoT و تجهیزات embedded را با نمونه‌های شخصی یا آزمایشگاهی مطالعه کن.",
+      "امنیت تخصصی":"وقتی پایه‌ها را ساختی، سراغ حوزه‌های صنعتی، مخابرات، خودرو، RF و سیستم‌های ویژه برو.",
+      "امنیت هوش مصنوعی":"مدل تهدید برای LLM و ML، کنترل ورودی و ارزیابی امنیتی را در سامانه‌های آزمایشی دنبال کن.",
+      "کریپتوگرافی و داده":"مفاهیم رمزنگاری، encoding، داده و روش‌های تحلیل را از پایه یاد بگیر.",
+      "تحلیل ایستا و کیفیت کد":"SAST، lint، code review و secure coding را به فرایند توسعه اضافه کن.",
+      "تحلیل و جرم‌یابی دیجیتال":"artifactها، timeline، IOC و شواهد را برای تحلیل دفاعی تمرین کن.",
+      "دانشنامه و مطالعه":"برای عمق بیشتر از کتاب، مقاله، talk و مسیرهای مطالعاتی استفاده کن.",
+      "YARA و شناسایی":"قواعد تشخیص و signatureهای قابل نگهداری را برای شکار و دفاع تمرین کن.",
+      "استخراج و دسترسی فیزیکی":"این موضوع را فقط در فضاها و تجهیزات دارای مجوز مطالعه و شبیه‌سازی کن.",
+      "CI/CD و زنجیره تأمین":"امنیت pipeline، artifact، secret و deployment را از دید دفاعی و ارزیابی کنترل‌شده ببین.",
+      "زنجیره دفاعی و گزارش‌دهی":"یافته‌ها را به گزارش، کنترل، metric و بهبود مداوم تبدیل کن.",
+      "هانی‌پات و فریب":"محیط‌های فریب و logging را برای درک رفتار و تشخیص تهدید طراحی کن."
+    };
+
+    const phases = [...new Set(resources.map(r => r.phase))];
+    const stateKey = "cyberpath-progress-v1";
+
+    function readStorage(key, fallback=null){
+      try{
+        const value=localStorage.getItem(key);
+        return value===null ? fallback : value;
+      }catch(e){
+        return fallback;
+      }
+    }
+
+    function writeStorage(key, value){
+      try{ localStorage.setItem(key, value); }catch(e){}
+    }
+
+    function readProgress(){
+      try{
+        const raw=readStorage(stateKey,"{}");
+        const parsed=JSON.parse(raw);
+        return parsed && typeof parsed==="object" && !Array.isArray(parsed) ? parsed : {};
+      }catch(e){
+        return {};
+      }
+    }
+
+    let completed = readProgress();
+
+    const $ = (sel, root=document) => root.querySelector(sel);
+    const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
+
+    function saveState(){
+      writeStorage(stateKey, JSON.stringify(completed));
+    }
+
+    function isDone(i){ return !!completed[i]; }
+
+    function escapeHTML(value=""){
+      return String(value).replace(/[&<'>"]/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[char]));
+    }
+
+    function safeURL(value=""){
+      try{
+        const url=new URL(value,window.location.href);
+        return /^https?:$/.test(url.protocol) ? url.href : "#";
+      }catch(e){
+        return "#";
+      }
+    }
+
+    function updateProgress(){
+      const total = resources.length;
+      const done = Object.values(completed).filter(Boolean).length;
+      const pct = total ? Math.round((done/total)*100) : 0;
+      $("#resourceCount").textContent = total;
+      $("#phaseCount").textContent = phases.length;
+      $("#completedCount").textContent = done;
+      $("#progressFill").style.width = pct + "%";
+      $("#progressPct").textContent = pct + "%";
+    }
+
+    function matches(resource, idx){
+      const q = $("#searchInput").value.trim().toLowerCase();
+      const phase = $("#phaseFilter").value;
+      const type = $("#typeFilter").value;
+      const hay = [resource.title, resource.desc, resource.phase, ...(resource.tags || [])].join(" ").toLowerCase();
+      const okQ = !q || hay.includes(q);
+      const okP = phase === "all" || resource.phase === phase;
+      const done = isDone(idx);
+      const okT = type === "all" || (type === "done" ? done : !done);
+      return okQ && okP && okT;
+    }
+
+    function render(){
+      const root = $("#roadmapList");
+      root.innerHTML = "";
+      let visibleCount = 0;
+
+      phases.forEach((phase, phaseIndex) => {
+        const items = resources
+          .map((r,i)=>({r,i}))
+          .filter(x=>x.r.phase===phase && matches(x.r,x.i));
+
+        if(!items.length) return;
+        visibleCount += items.length;
+
+        const article = document.createElement("article");
+        article.className = "phase reveal visible open";
+
+        const bodyId = "phase-" + phaseIndex;
+        article.innerHTML = `
+          <div class="phase-marker">${String(phaseIndex+1).padStart(2,"0")}</div>
+          <div class="phase-body">
+            <div class="phase-head" role="button" tabindex="0" aria-expanded="true">
+              <div>
+                <div class="phase-name">${escapeHTML(phase)}</div>
+                <div class="phase-meta">${escapeHTML(phaseGuide[phase] || "")} • ${items.length} منبع</div>
+              </div>
+              <div class="chev">⌃</div>
+            </div>
+            <div class="phase-content" id="${bodyId}">
+              <div class="cards"></div>
+            </div>
+          </div>
+        `;
+
+        const cards = $(".cards", article);
+        items.forEach(({r,i})=>{
+          const card = document.createElement("article");
+          card.className = "card";
+          const done = isDone(i);
+          card.innerHTML = `
+            <div class="card-top">
+              <div class="card-title">${escapeHTML(r.title)}</div>
+              <div class="card-tag">${escapeHTML(r.tags?.[0] || "Security")}</div>
+            </div>
+            <div class="card-desc">${escapeHTML(r.desc)}</div>
+            <div class="card-actions">
+              <a class="link-btn" href="${escapeHTML(safeURL(r.url))}" target="_blank" rel="noopener noreferrer">باز کردن ↗</a>
+              <button class="mark-btn ${done ? "done" : ""}" type="button" data-index="${i}" aria-pressed="${done ? "true" : "false"}">${done ? "✓ انجام شد" : "علامت‌گذاری"}</button>
+              <button class="link-btn detail-btn" type="button" data-index="${i}">جزئیات</button>
+            </div>
+          `;
+          cards.appendChild(card);
+        });
+
+        const header = $(".phase-head", article);
+        const toggle = ()=>{
+          article.classList.toggle("open");
+          header.setAttribute("aria-expanded", article.classList.contains("open") ? "true" : "false");
+        };
+        header.addEventListener("click", toggle);
+        header.addEventListener("keydown", e=>{
+          if(e.key==="Enter" || e.key===" "){ e.preventDefault(); toggle(); }
+        });
+
+        root.appendChild(article);
+      });
+
+      $("#emptyState").style.display = visibleCount ? "none" : "block";
+      updateProgress();
+
+      $$(".mark-btn", root).forEach(btn=>{
+        btn.addEventListener("click", ()=>{
+          const i = Number(btn.dataset.index);
+          completed[i] = !completed[i];
+          if(!completed[i]) delete completed[i];
+          saveState();
+          render();
+          toast(completed[i] ? "منبع به مسیر پیشرفت اضافه شد ✅" : "نشان انجام‌شده حذف شد");
+        });
+      });
+
+      $$(".detail-btn", root).forEach(btn=>{
+        btn.addEventListener("click", ()=>{
+          const i = Number(btn.dataset.index);
+          openModal(resources[i], i);
+        });
+      });
+    }
+
+    function openModal(resource, index){
+      $("#modalTitle").textContent = resource.title;
+      $("#modalBody").innerHTML = `
+        <p><strong>حوزه:</strong> ${escapeHTML(resource.phase)}</p>
+        <p><strong>توضیح:</strong> ${escapeHTML(resource.desc)}</p>
+        <p><strong>برچسب‌ها:</strong> ${escapeHTML((resource.tags || []).join(" • "))}</p>
+        <p><strong>کار آموزشی پیشنهادی:</strong> منبع را بخوان، یک آزمایش کوچک و ایزوله طراحی کن، نتیجه را ثبت کن،
+        سپس همان سناریو را از دید دفاعی بررسی کن. برای منابعی که تکنیک‌های تهاجمی، payload یا persistence را پوشش می‌دهند،
+        تمرین را فقط در CTF/VM/لابراتوار دارای مجوز انجام بده.</p>
+        <p><strong>وضعیت:</strong> ${isDone(index) ? "✅ تکمیل شده" : "⬜ تکمیل نشده"}</p>
+        <a class="btn primary" href="${escapeHTML(safeURL(resource.url))}" target="_blank" rel="noopener noreferrer">رفتن به منبع ↗</a>
+      `;
+      $("#modal").classList.add("show");
+      document.body.classList.add("modal-open");
+    }
+
+    function closeModal(){
+      $("#modal").classList.remove("show");
+      document.body.classList.remove("modal-open");
+    }
+
+    function toast(message){
+      const el = $("#toast");
+      el.textContent = message;
+      el.classList.add("show");
+      clearTimeout(window.__toast);
+      window.__toast = setTimeout(()=>el.classList.remove("show"),2200);
+    }
+
+    function setTheme(theme){
+      const normalized = theme === "light" ? "light" : "dark";
+      document.documentElement.dataset.theme = normalized;
+      writeStorage("cyberpath-theme", normalized);
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if(meta) meta.setAttribute("content", normalized === "light" ? "#f4f7fb" : "#070b14");
+      const btn = $("#themeBtn");
+      btn.textContent = normalized === "light" ? "☾" : "☀️";
+      btn.title = normalized === "light" ? "تغییر به حالت تاریک" : "تغییر به حالت روشن";
+      btn.setAttribute("aria-label", btn.title);
+      btn.setAttribute("aria-pressed", normalized === "light" ? "true" : "false");
+    }
+
+    function initFilters(){
+      phases.forEach(p=>{
+        const opt = document.createElement("option");
+        opt.value = p;
+        opt.textContent = p;
+        $("#phaseFilter").appendChild(opt);
+      });
+    }
+
+    function typeTerminal(){
+      const lines = [
+        '<span class="prompt">student@cyberpath</span>:<span class="cmd">~</span>$ whoami',
+        'ethical_security_learner',
+        '<span class="comment"># build → observe → test → detect → fix → report</span>',
+        '',
+        '<span class="prompt">student@cyberpath</span>:<span class="cmd">~</span>$ scope',
+        'AUTHORIZED LABS ONLY',
+        '',
+        '<span class="prompt">student@cyberpath</span>:<span class="cmd">~</span>$ roadmap --status',
+        'FOUNDATIONS  ████████░░ 80%',
+        'WEB / APPSEC  █████░░░░░ 50%',
+        'DEFENSE       ██████░░░░ 60%',
+        'RESEARCH      ████░░░░░░ 40%',
+        '<span class="blink"></span>'
+      ];
+
+      const target = $("#typingTerminal");
+      let lineIndex = 0, charIndex = 0;
+      const buffer = [];
+
+      function step(){
+        if(lineIndex >= lines.length){
+          target.innerHTML = buffer.join("<br>");
+          return;
+        }
+        const line = lines[lineIndex];
+        if(charIndex <= line.length){
+          target.innerHTML = buffer.join("<br>") + (buffer.length ? "<br>" : "") + line.slice(0,charIndex);
+          charIndex++;
+          setTimeout(step, lineIndex === 0 ? 24 : 10);
+        }else{
+          buffer.push(line);
+          lineIndex++;
+          charIndex = 0;
+          setTimeout(step, line === "" ? 120 : 50);
+        }
+      }
+      step();
+    }
+
+    async function copyChecklist(){
+      const text = [
+        "CYBERPATH — SAFE STUDY CHECKLIST",
+        "",
+        ...phases.map((p,idx)=>{
+          const subset = resources.filter(r=>r.phase===p);
+          return `${idx+1}. ${p}\n${subset.map(r=>`[ ] ${r.title} — ${r.url}`).join("\n")}`;
+        })
+      ].join("\n\n");
+
+      try{
+        if(navigator.clipboard && window.isSecureContext){
+          await navigator.clipboard.writeText(text);
+          toast("چک‌لیست کپی شد 📋");
+          return;
+        }
+      }catch(e){}
+
+      const textarea=document.createElement("textarea");
+      textarea.value=text;
+      textarea.setAttribute("readonly","");
+      textarea.style.position="fixed";
+      textarea.style.opacity="0";
+      textarea.style.pointerEvents="none";
+      document.body.appendChild(textarea);
+      textarea.select();
+      textarea.setSelectionRange(0,textarea.value.length);
+      let copied=false;
+      try{ copied=document.execCommand("copy"); }catch(e){}
+      textarea.remove();
+      toast(copied ? "چک‌لیست کپی شد 📋" : "کپی خودکار در این مرورگر در دسترس نیست");
+    }
+
+    $("#searchInput").addEventListener("input", render);
+    $("#phaseFilter").addEventListener("change", render);
+    $("#typeFilter").addEventListener("change", render);
+
+    $("#themeBtn").addEventListener("click", ()=>{
+      const light = document.documentElement.dataset.theme === "light";
+      setTheme(light ? "dark" : "light");
+    });
+
+    $("#focusBtn").addEventListener("click", ()=>$("#roadmap").scrollIntoView({behavior:"smooth"}));
+    $("#copyRoadmapBtn").addEventListener("click", copyChecklist);
+    $("#modalClose").addEventListener("click", closeModal);
+    $("#modal").addEventListener("click", e=>{ if(e.target === $("#modal")) closeModal(); });
+    document.addEventListener("keydown", e=>{ if(e.key === "Escape") closeModal(); });
+
+    $("#randomBtn").addEventListener("click", ()=>{
+      const item = resources[Math.floor(Math.random()*resources.length)];
+      const index = resources.indexOf(item);
+      $("#searchInput").value = item.title;
+      $("#phaseFilter").value = item.phase;
+      $("#typeFilter").value = "all";
+      render();
+      setTimeout(()=>openModal(item,index),80);
+    });
+
+    const backTop = $("#backTop");
+    window.addEventListener("scroll", ()=>{
+      backTop.classList.toggle("show", window.scrollY > 500);
+    });
+    backTop.addEventListener("click", ()=>window.scrollTo({top:0,behavior:"smooth"}));
+
+    const observer = "IntersectionObserver" in window
+      ? new IntersectionObserver(entries=>{
+          entries.forEach(entry=>{
+            if(entry.isIntersecting){
+              entry.target.classList.add("visible");
+              observer.unobserve(entry.target);
+            }
+          });
+        },{threshold:.08})
+      : null;
+
+    function observeReveals(){
+      $$(".reveal").forEach(el=>{
+        if(el.classList.contains("visible")) return;
+        if(observer) observer.observe(el);
+        else el.classList.add("visible");
+      });
+    }
+
+    (function init(){
+      const savedTheme = readStorage("cyberpath-theme");
+      const preferred = savedTheme === "light" || savedTheme === "dark"
+        ? savedTheme
+        : (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      setTheme(preferred);
+      initFilters();
+      render();
+      typeTerminal();
+      observeReveals();
+    })();
+  </script>
+</body>
+</html>

